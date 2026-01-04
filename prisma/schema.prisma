@@ -29,7 +29,7 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     name String
-    email String @unique
+    platformId String @unique
     role Role @default(USER)
     status UserStatus @default(ACTIVE)
     events Event[] @relation("creator")
