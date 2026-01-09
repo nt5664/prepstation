@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-gray-50 text-emerald-950 ${workSans.className}`}>
+      <body className={`bg-gray-900 text-emerald-100 ${workSans.className}`}>
         <Header />
         <main>{children}</main>
       </body>
