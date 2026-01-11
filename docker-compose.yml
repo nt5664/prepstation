@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:18.1
+    container_name: prepstation_db
+    restart: unless-stopped
+
+    env_file:
+      - .env.local
+
+    #environment:
+    #POSTGRES_DB: prepstation
+    #POSTGRES_USER: ${POSTGRES_USER}
+    #POSTGRES_PASSWORD: ${POSTGRES_PW}
+
+    volumes:
+      - prepstation_postgres_data:/var/lib/postresql/data
+
+    networks:
+      - prepstation_backend
+
+volumes:
+  prepstation_postgres_data:
+
+networks:
+  prepstation_backend:

@@ -3,8 +3,8 @@ datasource db {
 }
 
 generator client {
-    provider = "prisma-client"
-    output = "@/app/_data/"
+    provider = "prisma-client-js"
+    output = "../app/_data/"
 }
 
 enum Role {
