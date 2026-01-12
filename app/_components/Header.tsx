@@ -15,7 +15,7 @@ export default function Header() {
             PrepStation
           </Link>
           <p className="inline-block cursor-default self-baseline text-xs font-semibold px-1 mx-1 mt-1 rounded-sm border-2 border-gray-800 bg-orange-500 text-gray-800">
-            BETA
+            ALPHA
           </p>
         </div>
         <Navbar />

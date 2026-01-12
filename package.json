@@ -3,17 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev && npm run devdb",
+    "dev": "next dev",
+    "devfull": "npm run dev && npm run devdb",
     "build": "next build",
     "start": "next start",
+    "startfull": "npm run start && npm run proddb",
     "lint": "eslint",
     "devdb": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
     "proddb": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
-    "better-auth": "^1.4.8",
+    "better-auth": "^1.4.11",
     "date-fns": "^4.1.0",
     "next": "16.1.0",
     "react": "19.2.3",
