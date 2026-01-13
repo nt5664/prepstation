@@ -4,7 +4,8 @@ import { createUser, getUser } from "@/app/_lib/data-service";
 
 export const auth = betterAuth({
   appName: "PrepStation",
-  baseURL: process.env.APP_BASE_URL,
+  baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
   user: {
     additionalFields: {
       platformId: {
@@ -29,8 +30,6 @@ export const auth = betterAuth({
         const dbUser =
           (await getUser(profile.sub)) ??
           (await createUser(profile.sub, profile.preferred_username));
-
-        console.log(dbUser);
 
         return {
           user: {

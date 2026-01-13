@@ -5,6 +5,7 @@ import LoginButton from "./primitives/LoginButton";
 
 export default async function Navbar() {
   const session = await getServerSession();
+  const isSuperuser = session && session.user.role !== "USER";
 
   return (
     <nav className="z-10 h-8">
@@ -25,6 +26,11 @@ export default async function Navbar() {
           <li>
             <Link href="/">My Events</Link>
           </li>
+          {isSuperuser && (
+            <li>
+              <Link href="/">Moderation</Link>
+            </li>
+          )}
           <li>
             <Link href="/">Profile</Link>
           </li>
