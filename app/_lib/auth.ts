@@ -17,6 +17,9 @@ export const auth = betterAuth({
       role: {
         type: "string",
       },
+      status: {
+        type: "string",
+      },
     },
   },
   socialProviders: {
@@ -37,6 +40,7 @@ export const auth = betterAuth({
             platformId: profile.sub,
             internalId: dbUser.id,
             role: dbUser.role,
+            status: dbUser.status,
             name: profile.preferred_username,
             image: profile.picture,
             email: "REDACTED",

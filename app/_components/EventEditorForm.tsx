@@ -27,7 +27,7 @@ export default function EventEditorForm() {
     formState: { isValid, errors },
   } = useForm<EventFormSchema>({
     mode: "onBlur",
-    reValidateMode: "onChange",
+    reValidateMode: "onBlur",
     defaultValues: {
       eventName: "",
       eventTitle: "",

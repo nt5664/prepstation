@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 import Header from "./_components/Header";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 const workSans = Work_Sans({
   subsets: ["latin"],
@@ -33,6 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`bg-gray-900 text-emerald-100 ${workSans.className}`}>
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: "#666",
+            },
+          }}
+        />
         <Header />
         <main>{children}</main>
       </body>

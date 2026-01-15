@@ -1,6 +1,7 @@
 export enum ButtonType {
   Primary = "primary",
   Secondary = "secondary",
+  Borderless = "borderless",
 }
 
 export enum ButtonMode {
@@ -13,6 +14,7 @@ export default function Button({
   mode = ButtonMode.Submit,
   className,
   disabled,
+  title,
   onClick,
   children,
 }: Readonly<{
@@ -20,16 +22,20 @@ export default function Button({
   mode?: ButtonMode;
   className?: string;
   disabled?: boolean;
+  title?: string;
   onClick?: () => void;
   children: React.ReactNode;
 }>) {
   return (
     <button
       type={mode}
-      className={`px-2 py-1 border-2 rounded-sm cursor-pointer disabled:cursor-not-allowed ${className} ${getColors(
+      className={`${
+        type !== ButtonType.Borderless && "px-2 py-1 border-2 rounded-sm"
+      } cursor-pointer disabled:cursor-not-allowed ${getColors(
         type
-      )}`}
+      )} ${className}`}
       disabled={disabled}
+      title={title}
       onClick={onClick}
     >
       {children}

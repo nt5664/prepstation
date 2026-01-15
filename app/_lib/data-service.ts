@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/_lib/prisma";
 import { getServerSession } from "@/app/_lib/auth";
+import { isUserActive } from "../_utils/user";
 
 export async function createUser(platformId: string, name: string) {
   return await prisma.user.create({
@@ -31,6 +32,8 @@ export async function createEvent({
   editors: string[];
 }) {
   const session = await getServerSession();
+  if (!session || !isUserActive(session.user)) throw new Error("Forbidden");
+
   const editorIds = [{ id: session!.user.internalId }];
   if (editors.length) {
     editorIds.push(
@@ -61,4 +64,19 @@ export async function createEvent({
 
   revalidatePath("/user/events");
   redirect(`/events/${savedName}`);
+}
+
+export async function getEventSummary(name: string) {
+  return await prisma.event.findUnique({
+    where: {
+      name,
+      visibility: "ACTIVE",
+    },
+    select: {
+      title: true,
+      description: true,
+      editors: { select: { name: true } },
+      schedules: { select: { stub: true, title: true, startDate: true } },
+    },
+  });
 }

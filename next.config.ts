@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
     remotePatterns: [new URL("https://static-cdn.jtvnw.net/**")],
+    qualities: [75, 80, 100],
   },
 };
 
