@@ -1,9 +1,8 @@
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { forbidden, notFound } from "next/navigation";
 
-import { prisma } from "@/app/_lib/prisma";
 import { getServerSession } from "@/app/_lib/auth";
-import { isUserActive } from "../_utils/user";
+import { prisma } from "@/app/_lib/prisma";
+import { isSuperuser, isUserActive } from "@/app/_utils/user";
 
 export async function createUser(platformId: string, name: string) {
   return await prisma.user.create({
@@ -35,12 +34,15 @@ export async function createEvent({
   if (!session || !isUserActive(session.user)) throw new Error("Forbidden");
 
   const editorIds = [{ id: session!.user.internalId }];
-  if (editors.length) {
+  const remainingEditors = editors.filter(
+    (x) => x !== session!.user.internalId
+  );
+  if (remainingEditors.length) {
     editorIds.push(
       ...(await prisma.user.findMany({
         where: {
           name: {
-            in: editors,
+            in: remainingEditors,
           },
         },
         select: {
@@ -50,7 +52,7 @@ export async function createEvent({
     );
   }
 
-  const { name: savedName } = await prisma.event.create({
+  return await prisma.event.create({
     data: {
       name,
       title,
@@ -61,9 +63,19 @@ export async function createEvent({
       },
     },
   });
+}
 
-  revalidatePath("/user/events");
-  redirect(`/events/${savedName}`);
+export async function getEventData(name: string) {
+  return await prisma.event.findUnique({
+    where: { name },
+    select: {
+      id: true,
+      name: true,
+      title: true,
+      description: true,
+      editors: { select: { id: true } },
+    },
+  });
 }
 
 export async function getEventSummary(name: string) {
@@ -73,10 +85,93 @@ export async function getEventSummary(name: string) {
       visibility: "ACTIVE",
     },
     select: {
+      id: true,
       title: true,
       description: true,
       editors: { select: { name: true } },
       schedules: { select: { stub: true, title: true, startDate: true } },
     },
   });
+}
+
+async function getEventEditorsById(eventId: string) {
+  return await prisma.event.findUnique({
+    where: {
+      id: eventId,
+    },
+    select: {
+      creatorId: true,
+      editors: { select: { name: true } },
+    },
+  });
+}
+
+export async function updateEvent({
+  id,
+  name,
+  title,
+  description,
+  editors,
+}: {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  editors: string[];
+}) {
+  const [session, oldEditors] = await Promise.all([
+    getServerSession(),
+    getEventEditorsById(id),
+  ]);
+  if (
+    !session ||
+    !isUserActive(session!.user) ||
+    !(
+      oldEditors?.editors.map((x) => x.name).includes(session!.user.name) ??
+      false
+    )
+  )
+    throw new Error("Forbidden");
+
+  const editorIds = [{ id: session!.user.internalId }];
+  const remainingEditors = editors.filter(
+    (x) => x !== session!.user.internalId && x !== oldEditors?.creatorId
+  );
+  if (remainingEditors.length) {
+    editorIds.push(
+      ...(await prisma.user.findMany({
+        where: {
+          name: {
+            in: remainingEditors,
+          },
+        },
+        select: {
+          id: true,
+        },
+      }))
+    );
+  }
+
+  return await prisma.event.update({
+    where: { id },
+    data: { name, title, description, editors: { set: editorIds } },
+  });
+}
+
+export async function deleteEvent(id: string) {
+  const [session, event] = await Promise.all([
+    getServerSession(),
+    getEventEditorsById(id),
+  ]);
+  console.log(session, getEventEditorsById(id));
+  if (
+    !session ||
+    !event ||
+    !isUserActive(session!.user) ||
+    (event!.creatorId !== session!.user.internalId &&
+      !isSuperuser(session!.user))
+  )
+    notFound();
+
+  return await prisma.event.delete({ where: { id } });
 }

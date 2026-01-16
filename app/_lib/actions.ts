@@ -1,18 +1,42 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import {
   eventFormSchema,
   EventFormSchema,
 } from "@/app/_utils/form-schemas/event";
-import { createEvent as createEventDb } from "@/app/_lib/data-service";
+import {
+  createEvent as createEventDb,
+  updateEvent,
+  deleteEvent as deleteEventDb,
+} from "@/app/_lib/data-service";
 
-export async function createEvent(data: EventFormSchema) {
-  // zod schema & validation
+export async function saveEvent(
+  data: EventFormSchema,
+  id: string | null = null
+) {
   const {
     eventName: name,
     eventTitle: title,
     description,
   } = eventFormSchema.parse(data);
 
-  await createEventDb({ name, title, description, editors: [] });
+  const { name: savedName } = id
+    ? await updateEvent({ id, name, title, description, editors: [] })
+    : await createEventDb({
+        name,
+        title,
+        description,
+        editors: [],
+      });
+
+  revalidatePath("/user/events");
+  return savedName;
+}
+
+export async function deleteEvent(id: string) {
+  const res = deleteEventDb(id);
+
+  revalidatePath("/user/events");
+  return res;
 }

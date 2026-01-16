@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
 
 import InputLengthCounter from "@/app/_components/forms/InputLengthCounter";
 import Button, {
@@ -16,9 +17,20 @@ import {
   eventFormSchema,
   EventFormSchema,
 } from "@/app/_utils/form-schemas/event";
-import { createEvent } from "@/app/_lib/actions";
+import { saveEvent } from "@/app/_lib/actions";
+import FormSubmitButton from "./forms/FormSubmitButton";
 
-export default function EventEditorForm() {
+export default function EventEditorForm({
+  eventToEdit,
+}: Readonly<{
+  eventToEdit?: {
+    id: string;
+    name: string;
+    title: string;
+    description: string;
+  } | null;
+}>) {
+  const isEditing = !!eventToEdit;
   const router = useRouter();
   const {
     register,
@@ -29,15 +41,25 @@ export default function EventEditorForm() {
     mode: "onBlur",
     reValidateMode: "onBlur",
     defaultValues: {
-      eventName: "",
-      eventTitle: "",
-      description: "",
+      eventName: isEditing ? eventToEdit!.name : "",
+      eventTitle: isEditing ? eventToEdit!.title : "",
+      description: isEditing ? eventToEdit!.description : "",
     },
     resolver: zodResolver(eventFormSchema),
   });
 
   function onSubmit(data: EventFormSchema) {
-    createEvent(data);
+    toast.promise(saveEvent(data, eventToEdit?.id), {
+      loading: "Creating...",
+      success: (savedId) => {
+        router.push(`/events/${savedId}`);
+        return `Event has been ${
+          isEditing ? "updated" : "created"
+        } successfully`;
+      },
+      error: (err) =>
+        `Could not ${isEditing ? "edit" : "create"} the event: ${err}`,
+    });
   }
 
   function handleBack() {
@@ -106,9 +128,9 @@ export default function EventEditorForm() {
         />
       </FormRow>
 
-      <Button type={ButtonType.Primary} className="mr-2" disabled={!isValid}>
-        Create
-      </Button>
+      <FormSubmitButton disabled={!isValid}>
+        {isEditing ? "Save changes" : "Create"}
+      </FormSubmitButton>
       <Button
         type={ButtonType.Secondary}
         mode={ButtonMode.Reset}
