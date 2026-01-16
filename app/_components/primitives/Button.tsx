@@ -1,3 +1,6 @@
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export enum ButtonType {
   Primary = "primary",
   Secondary = "secondary",
@@ -29,11 +32,14 @@ export default function Button({
   return (
     <button
       type={mode}
-      className={`${
-        type !== ButtonType.Borderless && "px-2 py-1 border-2 rounded-sm"
-      } cursor-pointer disabled:cursor-not-allowed ${getColors(
-        type
-      )} ${className}`}
+      className={twMerge(
+        clsx(
+          type !== ButtonType.Borderless && "px-2 py-1 border-2 rounded-sm",
+          "cursor-pointer disabled:cursor-not-allowed",
+          getColors(type),
+          className
+        )
+      )}
       disabled={disabled}
       title={title}
       onClick={onClick}
