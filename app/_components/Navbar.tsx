@@ -1,11 +1,13 @@
-import { PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import LoginButton from "@/app/_components/primitives/LoginButton";
 import { getServerSession } from "@/app/_lib/auth";
-import LoginButton from "./primitives/LoginButton";
+import { isSuperuser } from "@/app/_utils/user";
+import LogoutButton from "./primitives/LogoutButton";
 
 export default async function Navbar() {
   const session = await getServerSession();
-  const isSuperuser = session && session.user.role !== "USER";
+  const superuser = isSuperuser(session?.user);
 
   return (
     <nav className="z-10 h-8">
@@ -24,18 +26,18 @@ export default async function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/">My Events</Link>
+            <Link href="/user/events">My Events</Link>
           </li>
-          {isSuperuser && (
+          {superuser && (
             <li>
-              <Link href="/">Moderation</Link>
+              <Link href="/mod">Moderation</Link>
             </li>
           )}
           <li>
-            <Link href="/">Profile</Link>
+            <Link href="/user">Profile</Link>
           </li>
           <li>
-            <Link href="/">Logout</Link>
+            <LogoutButton />
           </li>
         </ul>
       ) : (
