@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/app/_lib/auth";
 
 export const config = {
-  matcher: ["/editor/:path", "/user", "/user/:path"],
+  matcher: ["/editor/:path*", "/user/:path*", "/mod/:path*"],
 };
 
 export async function proxy(req: Request) {
