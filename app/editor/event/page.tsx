@@ -1,13 +1,22 @@
 import EventEditorForm from "@/app/_components/EventEditorForm";
+import { getEventData } from "@/app/_lib/data-service";
 
-export default function EventEditorPage() {
+export default async function EventEditorPage({
+  searchParams,
+}: Readonly<{
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}>) {
+  const { ename: editName } = await searchParams;
+  const eventToEdit = editName
+    ? await getEventData(editName as string)
+    : undefined;
   return (
     <div>
       <h2 className="text-center tracking-wider mt-6 mb-4 text-2xl font-medium">
-        Create new event
+        {eventToEdit ? "Edit event" : "Create new event"}
       </h2>
       <div className="grid grid-cols-2 w-3/4 justify-self-center">
-        <EventEditorForm />
+        <EventEditorForm eventToEdit={eventToEdit} />
 
         <div className="flex flex-col text-sm space-y-6 bg-gray-800 border-2 rounded-md leading-4 border-cyan-900 mx-2 my-4 px-3 py-2">
           <p>

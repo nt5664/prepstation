@@ -24,7 +24,7 @@ export default async function Page({
   const event = await getEventSummary(eventName);
   if (!event) notFound();
 
-  const session = await getServerSession(); // CHANGE HISTORY TABLE, MODERATION BUTTONS. line separator between button groups?
+  const session = await getServerSession();
 
   return (
     <div className="flex flex-col gap-2.5 w-3/5 mx-auto my-10 p-2 rounded-md border-2 border-cyan-900 bg-gray-700">
@@ -34,7 +34,7 @@ export default async function Page({
       />
 
       <div className="px-2 py-1 self-start border-2 rounded-sm border-gray-600">
-        <EventActions />
+        <EventActions eventId={event!.id} eventName={eventName} />
       </div>
 
       <div className="grid p-2 rounded-sm bg-gray-600">
