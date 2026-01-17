@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation";
-
 import { getServerSession } from "@/app/_lib/auth";
 import { prisma } from "@/app/_lib/prisma";
 import { isSuperuser, isUserActive } from "@/app/_utils/user";

@@ -36,6 +36,14 @@
   .w-inline-full {
     inline-size: 100%;
   }
+
+  .dialog-open {
+    animation: dialopen 0.1s linear 1;
+  }
+
+  .dialog-close {
+    animation: dialclose 0.1s linear 1 forwards;
+  }
 }
 
 @keyframes spin {
@@ -44,5 +52,27 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes dialopen {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dialclose {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.85);
   }
 }
