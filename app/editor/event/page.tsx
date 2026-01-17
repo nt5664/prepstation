@@ -5,7 +5,7 @@ import { getEventData } from "@/app/_lib/data/event-service";
 export default async function EventEditorPage({
   searchParams,
 }: Readonly<{
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ ename: string | undefined }>;
 }>) {
   const { ename: editName } = await searchParams;
   const eventToEdit = editName
