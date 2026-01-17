@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { betterAuth, TwitchProfile } from "better-auth";
-import { createUser, getUser } from "@/app/_lib/data-service";
+import { createUser, getUser } from "@/app/_lib/data/user-service";
 
 export const auth = betterAuth({
   appName: "PrepStation",

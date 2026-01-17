@@ -1,5 +1,5 @@
 import EventEditorForm from "@/app/_components/EventEditorForm";
-import { getEventData } from "@/app/_lib/data-service";
+import { getEventData } from "@/app/_lib/data/event-service";
 
 export default async function EventEditorPage({
   searchParams,

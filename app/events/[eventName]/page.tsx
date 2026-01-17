@@ -1,7 +1,7 @@
 import EventActions from "@/app/_components/EventActions";
 import EventCard from "@/app/_components/EventCard";
 import { getServerSession } from "@/app/_lib/auth";
-import { getEventSummary } from "@/app/_lib/data-service";
+import { getEventSummary } from "@/app/_lib/data/event-service";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({

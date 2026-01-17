@@ -1,23 +1,8 @@
-import { forbidden, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { getServerSession } from "@/app/_lib/auth";
 import { prisma } from "@/app/_lib/prisma";
 import { isSuperuser, isUserActive } from "@/app/_utils/user";
-
-export async function createUser(platformId: string, name: string) {
-  return await prisma.user.create({
-    data: {
-      name,
-      platformId,
-      role: "USER",
-      status: "ACTIVE",
-    },
-  });
-}
-
-export async function getUser(id: string) {
-  return await prisma.user.findUnique({ where: { platformId: id } });
-}
 
 export async function createEvent({
   name,
@@ -35,7 +20,7 @@ export async function createEvent({
 
   const editorIds = [{ id: session!.user.internalId }];
   const remainingEditors = editors.filter(
-    (x) => x !== session!.user.internalId
+    (x) => x !== session!.user.internalId,
   );
   if (remainingEditors.length) {
     editorIds.push(
@@ -48,7 +33,7 @@ export async function createEvent({
         select: {
           id: true,
         },
-      }))
+      })),
     );
   }
 
@@ -94,18 +79,6 @@ export async function getEventSummary(name: string) {
   });
 }
 
-async function getEventEditorsById(eventId: string) {
-  return await prisma.event.findUnique({
-    where: {
-      id: eventId,
-    },
-    select: {
-      creatorId: true,
-      editors: { select: { name: true } },
-    },
-  });
-}
-
 export async function updateEvent({
   id,
   name,
@@ -135,7 +108,7 @@ export async function updateEvent({
 
   const editorIds = [{ id: session!.user.internalId }];
   const remainingEditors = editors.filter(
-    (x) => x !== session!.user.internalId && x !== oldEditors?.creatorId
+    (x) => x !== session!.user.internalId && x !== oldEditors?.creatorId,
   );
   if (remainingEditors.length) {
     editorIds.push(
@@ -148,7 +121,7 @@ export async function updateEvent({
         select: {
           id: true,
         },
-      }))
+      })),
     );
   }
 
@@ -163,7 +136,7 @@ export async function deleteEvent(id: string) {
     getServerSession(),
     getEventEditorsById(id),
   ]);
-  console.log(session, getEventEditorsById(id));
+
   if (
     !session ||
     !event ||
@@ -171,7 +144,19 @@ export async function deleteEvent(id: string) {
     (event!.creatorId !== session!.user.internalId &&
       !isSuperuser(session!.user))
   )
-    notFound();
+    throw new Error("Forbidden");
 
   return await prisma.event.delete({ where: { id } });
+}
+
+async function getEventEditorsById(eventId: string) {
+  return await prisma.event.findUnique({
+    where: {
+      id: eventId,
+    },
+    select: {
+      creatorId: true,
+      editors: { select: { name: true } },
+    },
+  });
 }

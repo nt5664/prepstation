@@ -9,11 +9,11 @@ import {
   createEvent as createEventDb,
   updateEvent,
   deleteEvent as deleteEventDb,
-} from "@/app/_lib/data-service";
+} from "@/app/_lib/data/event-service";
 
 export async function saveEvent(
   data: EventFormSchema,
-  id: string | null = null
+  id: string | null = null,
 ) {
   const {
     eventName: name,
