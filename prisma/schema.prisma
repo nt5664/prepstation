@@ -62,7 +62,7 @@ model Timetable {
     id String @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    stub String @unique @db.VarChar(32)
+    stub String @db.VarChar(32)
     title String @db.VarChar(64)
     startDate DateTime @default(now())
     transitionTime Int
