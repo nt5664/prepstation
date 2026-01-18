@@ -2,6 +2,10 @@ import EventEditorForm from "@/app/_components/EventEditorForm";
 import FormHint from "@/app/_components/forms/FormHint";
 import { getEventData } from "@/app/_lib/data/event-service";
 
+export const metadata = {
+  title: "Event editor",
+};
+
 export default async function EventEditorPage({
   searchParams,
 }: Readonly<{
@@ -17,7 +21,8 @@ export default async function EventEditorPage({
       <h2 className="text-center tracking-wider mt-6 mb-4 text-2xl font-medium">
         {eventToEdit ? "Edit event" : "Create new event"}
       </h2>
-      <div className="grid grid-cols-2 w-3/4 justify-self-center">
+
+      <div className="grid grid-cols-2 w-3/5 justify-self-center">
         <EventEditorForm eventToEdit={eventToEdit} />
 
         <FormHint>
