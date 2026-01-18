@@ -1,6 +1,5 @@
-import { Path } from "react-hook-form";
 import z from "zod";
-import { FormFieldConfig } from "./form-fields-base";
+import { FormFieldConfig } from "@/app/_utils/form-schemas/form-fields-base";
 
 export const eventFormSchema = z.object({
   eventName: z
@@ -9,7 +8,7 @@ export const eventFormSchema = z.object({
     .max(32, "The max length is 32 characters.")
     .regex(
       /^[a-zA-Z0-9-]+$/,
-      "The name can only contain alphanumeric characters and dashes."
+      "The name can only contain alphanumeric characters and dashes.",
     ),
   eventTitle: z
     .string()

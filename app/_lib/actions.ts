@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import {
   eventFormSchema,
   EventFormSchema,
-} from "@/app/_utils/form-schemas/event";
+} from "@/app/_utils/form-schemas/event-schema";
 import {
   createEvent as createEventDb,
   updateEvent,

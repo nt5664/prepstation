@@ -16,9 +16,9 @@ import {
   eventFormFields,
   eventFormSchema,
   EventFormSchema,
-} from "@/app/_utils/form-schemas/event";
+} from "@/app/_utils/form-schemas/event-schema";
 import { saveEvent } from "@/app/_lib/actions";
-import FormSubmitButton from "./forms/FormSubmitButton";
+import FormSubmitButton from "@/app/_components/forms/FormSubmitButton";
 
 export default function EventEditorForm({
   eventToEdit,
@@ -50,7 +50,7 @@ export default function EventEditorForm({
 
   function onSubmit(data: EventFormSchema) {
     toast.promise(saveEvent(data, eventToEdit?.id), {
-      loading: "Creating...",
+      loading: "Submitting...",
       success: (savedId) => {
         router.push(`/events/${savedId}`);
         return `Event has been ${
@@ -76,7 +76,7 @@ export default function EventEditorForm({
           <InputLengthCounter<EventFormSchema>
             control={control}
             name={eventFormFields.eventName.id}
-            maxLength={eventFormFields.eventName.maxLength}
+            maxLength={eventFormFields.eventName.maxLength!}
           />
         }
       >
@@ -96,7 +96,7 @@ export default function EventEditorForm({
           <InputLengthCounter
             control={control}
             name={eventFormFields.eventTitle.id}
-            maxLength={eventFormFields.eventTitle.maxLength}
+            maxLength={eventFormFields.eventTitle.maxLength!}
           />
         }
       >
@@ -116,7 +116,7 @@ export default function EventEditorForm({
           <InputLengthCounter
             control={control}
             name={eventFormFields.description.id}
-            maxLength={eventFormFields.description.maxLength}
+            maxLength={eventFormFields.description.maxLength!}
           />
         }
       >
