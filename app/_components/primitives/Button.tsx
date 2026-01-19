@@ -10,6 +10,7 @@ export enum ButtonType {
 export enum ButtonMode {
   Submit = "submit",
   Reset = "reset",
+  Button = "button",
 }
 
 export default function Button({
@@ -37,8 +38,8 @@ export default function Button({
           type !== ButtonType.Borderless && "px-2 py-1 border-2 rounded-sm",
           "cursor-pointer disabled:cursor-not-allowed",
           getColors(type),
-          className
-        )
+          className,
+        ),
       )}
       disabled={disabled}
       title={title}

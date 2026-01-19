@@ -48,7 +48,7 @@ export default function Input({
         id={id}
         type={type === InputType.Number ? "text" : type.toString()}
         placeholder={placeholder}
-        pattern={type === InputType.Number ? "[0-9]*" : ""}
+        inputMode={type === InputType.Number ? "numeric" : "text"}
         className={style}
         {...registerAttributes}
       />

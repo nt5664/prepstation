@@ -58,7 +58,7 @@ export default function EventEditorForm({
         } successfully`;
       },
       error: (err) =>
-        `Could not ${isEditing ? "edit" : "create"} the event: ${err}`,
+        `Could not ${isEditing ? "update" : "create"} the event: ${err}`,
     });
   }
 
@@ -67,7 +67,7 @@ export default function EventEditorForm({
   }
 
   return (
-    <form className="m-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="m-4" noValidate onSubmit={handleSubmit(onSubmit)}>
       <FormRow
         id={eventFormFields.eventName.id}
         label="Event name"
