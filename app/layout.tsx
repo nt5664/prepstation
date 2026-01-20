@@ -3,6 +3,7 @@ import { Work_Sans } from "next/font/google";
 import Header from "./_components/Header";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Footer from "./_components/Footer";
 
 const workSans = Work_Sans({
   subsets: ["latin"],
@@ -37,13 +38,18 @@ export default function RootLayout({
         <Toaster
           position="top-center"
           toastOptions={{
-            style: {
-              background: "#666",
-            },
+            duration: 4000,
           }}
         />
-        <Header />
-        <main>{children}</main>
+        <div className="flex h-dvh flex-col">
+          <Header />
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="min-h-full flex flex-col">
+              <main>{children}</main>
+              <Footer />
+            </div>
+          </div>
+        </div>
       </body>
     </html>
   );
