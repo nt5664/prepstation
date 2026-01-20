@@ -6,10 +6,15 @@ import {
   EventFormSchema,
 } from "@/app/_utils/form-schemas/event-schema";
 import {
-  createEvent as createEventDb,
+  tableFormSchema,
+  TableFormSchema,
+} from "@/app/_utils/form-schemas/table-schema";
+import {
+  createEvent,
   updateEvent,
   deleteEvent as deleteEventDb,
 } from "@/app/_lib/data/event-service";
+import { createTable, updateTable } from "./data/table-service";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -23,7 +28,7 @@ export async function saveEvent(
 
   const { name: savedName } = id
     ? await updateEvent({ id, name, title, description, editors: [] })
-    : await createEventDb({
+    : await createEvent({
         name,
         title,
         description,
@@ -39,4 +44,38 @@ export async function deleteEvent(id: string) {
 
   revalidatePath("/user/events");
   return res;
+}
+
+export async function saveTable(
+  data: TableFormSchema,
+  eventName: string,
+  id: string | null = null,
+) {
+  const {
+    tableStub: stub,
+    tableTitle: title,
+    startDate,
+    transitionTime,
+    channel,
+    website,
+    extraColumns,
+  } = tableFormSchema.parse(data);
+
+  const objCommon = {
+    stub,
+    title,
+    startDate: new Date(startDate),
+    transitionTime,
+    channel: channel ?? "",
+    website: website ?? "",
+    extraColumns: extraColumns ?? [],
+  };
+
+  const { stub: savedStub } = id
+    ? await updateTable({ id, ...objCommon }, eventName)
+    : await createTable(objCommon, eventName);
+
+  revalidatePath("/user/events");
+  revalidatePath(`/events`);
+  return savedStub;
 }

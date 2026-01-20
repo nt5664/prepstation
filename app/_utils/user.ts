@@ -1,5 +1,5 @@
 export function isSuperuser(
-  user: Readonly<{ role: string }> | null | undefined
+  user: Readonly<{ role: string }> | null | undefined,
 ) {
   return user && user.role !== "USER";
 }

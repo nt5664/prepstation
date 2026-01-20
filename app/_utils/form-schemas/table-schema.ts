@@ -36,7 +36,9 @@ export const tableFormSchema = z.object({
     .url("The website must be a URL")
     .max(64, "The max length is 64 characters")
     .optional(),
-  extraColumns: z.array(extraColumnSchema),
+  extraColumns: z
+    .array(extraColumnSchema)
+    .max(5, "Maximum 5 extra columns are allowed."),
 });
 
 export type TableFormSchema = z.infer<typeof tableFormSchema>;
@@ -48,5 +50,5 @@ export const tableFormFields: FormFieldConfig<TableFormSchema> = {
   website: { id: "website", maxLength: 64 },
   startDate: { id: "startDate" },
   transitionTime: { id: "transitionTime" },
-  extraColumns: { id: "extraColumns" },
+  extraColumns: { id: "extraColumns", maxLength: 5 },
 };

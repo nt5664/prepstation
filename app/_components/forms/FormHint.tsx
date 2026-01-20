@@ -39,7 +39,7 @@ function Field({
 function Highlight({
   className,
   children,
-}: Readonly<{ className: string; children: React.ReactNode }>) {
+}: Readonly<{ className?: string; children: React.ReactNode }>) {
   return (
     <em className={twMerge(clsx("text-emerald-500", className))}>{children}</em>
   );
