@@ -28,8 +28,7 @@ export default async function EventEditorPage({
         <FormHint>
           <FormHint.Field name="Event name">
             short name of the event, used for the slug and identifying it,
-            therefore must consist of alphanumeric letters and dashes (e.g. the
-            event will be via{" "}
+            therefore must consist of alphanumeric letters and dashes (e.g.
             <FormHint.Highlight className="text-emerald-600">
               /events/exampleEvent-01
             </FormHint.Highlight>
