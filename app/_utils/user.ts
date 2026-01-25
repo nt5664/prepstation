@@ -7,3 +7,10 @@ export function isSuperuser(
 export function isUserActive(user: Readonly<{ status: string }> | null) {
   return user && user.status === "ACTIVE";
 }
+
+export function isEditor(
+  user: Readonly<{ internalId: string }>,
+  editors: Readonly<{ id: string }[]>,
+) {
+  return editors.some((x) => x.id === user.internalId);
+}
