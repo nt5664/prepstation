@@ -1,6 +1,8 @@
 import EventEditorForm from "@/app/_components/EventEditorForm";
 import FormHint from "@/app/_components/forms/FormHint";
+import { getServerSession } from "@/app/_lib/auth";
 import { getEventData } from "@/app/_lib/data/event-service";
+import { notFound } from "next/navigation";
 
 export const metadata = {
   title: "Event editor",
@@ -11,10 +13,20 @@ export default async function EventEditorPage({
 }: Readonly<{
   searchParams: Promise<{ ename: string | undefined }>;
 }>) {
-  const { ename: editName } = await searchParams;
+  const [{ ename: editName }, session] = await Promise.all([
+    searchParams,
+    getServerSession(),
+  ]);
+
   const eventToEdit = editName
     ? await getEventData(editName as string)
     : undefined;
+
+  if (
+    eventToEdit &&
+    !eventToEdit!.editors.map((x) => x.id).includes(session!.user.internalId)
+  )
+    return notFound();
 
   return (
     <div>

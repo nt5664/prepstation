@@ -85,13 +85,14 @@ export default async function TableEditorPage({
 
           <FormHint.Field name="Extra columns">
             if additional data is necessary (for commentary, etc.), up to 5
-            extra columns can be created. By specifying a secret, the column
-            will be hidden by default, unless the same secret is present on the
-            URL with the{" "}
+            extra columns can be created (the name cannot be longer than 50
+            characters). By specifying a secret, the column will be hidden by
+            default, unless the same secret is present on the URL with the{" "}
             <FormHint.Highlight className="font-semibold">
               secrets
             </FormHint.Highlight>{" "}
-            key. (e.g.{" "}
+            key (the secret cannot be longer than 15 characters and can contain
+            only slphanumeric letters). (e.g.{" "}
             <FormHint.Highlight className="text-emerald-600">
               /events/exampleEvent-01/exampleTable?secrets=supersecret
             </FormHint.Highlight>{" "}
