@@ -1,8 +1,11 @@
 import { getServerSession } from "@/app/_lib/auth";
-import { isSuperuser, isUserActive } from "@/app/_utils/user";
+import { isEditor, isSuperuser, isUserActive } from "@/app/_utils/user";
 import { getEventData } from "@/app/_lib/data/event-service";
 import { prisma } from "@/app/_lib/prisma";
 import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
+import { JsonValue } from "@prisma/client/runtime/client";
+import { ExtraValue } from "@/app/_types/ExtraValue";
+import { deleteSchedule } from "./schedule-service";
 
 export async function createTable(
   tableData: {
@@ -63,6 +66,43 @@ export async function getTableSummary(stub: string, eventId: string) {
     : null;
 }
 
+export async function getTableEntries(stub: string, eventId: string) {
+  const table = await prisma.timetable.findFirst({
+    where: {
+      stub,
+      eventId,
+    },
+    select: {
+      id: true,
+      title: true,
+      startDate: true,
+      transitionTime: true,
+      extraColumns: true,
+      entries: {
+        select: { id: true, name: true, estimate: true, extraData: true },
+      },
+    },
+  });
+
+  return table
+    ? {
+        ...table,
+        extraColumns: normalizeExtraColumns(table.extraColumns),
+        entries: table.entries.map((x) => ({
+          ...x,
+          extraData: normalizeExtraValues(x.extraData),
+        })),
+      }
+    : null;
+}
+
+export async function getTableStub(id: string) {
+  return await prisma.timetable.findUnique({
+    where: { id },
+    select: { stub: true },
+  });
+}
+
 export async function updateTable(
   tableData: {
     id: string;
@@ -80,7 +120,7 @@ export async function updateTable(
   const [session, event, oldStub] = await Promise.all([
     getServerSession(),
     getEventData(eventName),
-    getOldStub(id),
+    getTableStub(id),
   ]);
   if (!session || !event || !isUserAuthorized(session!.user, event!.editors))
     throw new Error("Forbidden");
@@ -101,14 +141,41 @@ export async function updateTable(
   });
 }
 
+export async function deleteTable(id: string, eventName: string) {
+  const [session, event] = await Promise.all([
+    getServerSession(),
+    getEventData(eventName),
+  ]);
+  if (!session || !event || !isUserAuthorized(session!.user, event!.editors))
+    throw new Error("Forbidden");
+
+  const entries = await prisma.timetable.findUnique({
+    where: { id },
+    select: { eventId: true, entries: { select: { id: true } } },
+  });
+  if (entries && entries.entries.length)
+    await deleteSchedule(
+      entries.entries.map((x) => x.id),
+      entries.eventId,
+      id,
+    );
+
+  return await prisma.timetable.delete({ where: { id } });
+}
+
 function isUserAuthorized(
-  user: { id: string; status: string; role: string },
+  user: { internalId: string; status: string; role: string },
   editors: { id: string }[],
 ) {
-  return (
-    isUserActive(user) &&
-    (editors.some((x) => x.id === user.id) || isSuperuser(user))
-  );
+  return isUserActive(user) && (isEditor(user, editors) || isSuperuser(user));
+}
+
+function normalizeExtraColumns(columns: JsonValue) {
+  return Array.isArray(columns) ? (columns as ExtraColumnDefinition[]) : [];
+}
+
+function normalizeExtraValues(values: JsonValue) {
+  return Array.isArray(values) ? (values as ExtraValue[]) : [];
 }
 
 async function stubExistsInEvent(
@@ -121,11 +188,4 @@ async function stubExistsInEvent(
       where: id ? { id, stub, eventId } : { stub, eventId },
     })) > 0
   );
-}
-
-async function getOldStub(id: string) {
-  return await prisma.timetable.findUnique({
-    where: { id },
-    select: { stub: true },
-  });
 }

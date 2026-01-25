@@ -1,6 +1,7 @@
 import { getServerSession } from "@/app/_lib/auth";
 import { prisma } from "@/app/_lib/prisma";
 import { isSuperuser, isUserActive } from "@/app/_utils/user";
+import { deleteTable } from "@/app/_lib/data/table-service";
 
 export async function createEvent({
   name,
@@ -77,6 +78,13 @@ export async function getEventSummary(name: string) {
   });
 }
 
+export async function getEditorsById(id: string) {
+  return await prisma.event.findUnique({
+    where: { id },
+    select: { name: true, editors: { select: { id: true } } },
+  });
+}
+
 export async function updateEvent({
   id,
   name,
@@ -132,7 +140,14 @@ export async function updateEvent({
 export async function deleteEvent(id: string) {
   const [session, event] = await Promise.all([
     getServerSession(),
-    getEventEditorsById(id),
+    prisma.event.findUnique({
+      where: { id },
+      select: {
+        name: true,
+        schedules: { select: { id: true } },
+        creatorId: true,
+      },
+    }),
   ]);
 
   if (
@@ -143,6 +158,14 @@ export async function deleteEvent(id: string) {
       !isSuperuser(session!.user))
   )
     throw new Error("Forbidden");
+
+  if (event!.schedules.length)
+    await prisma.$transaction(
+      async () =>
+        await Promise.all(
+          event!.schedules.map((x) => deleteTable(x.id, event!.name)),
+        ),
+    );
 
   return await prisma.event.delete({ where: { id } });
 }
