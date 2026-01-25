@@ -46,7 +46,7 @@ export default function ConfirmationButton<TArg, TRet>({
     <Button
       type={ButtonType.Borderless}
       title="Delete event"
-      className="bg-transparent hover:bg-transparent active:bg-transparent text-teal-500 hover:text-teal-400 active:text-teal-600"
+      className="text-teal-500 hover:text-teal-400 active:text-teal-600"
       onClick={() => {
         if (isOpen) return;
 

@@ -13,6 +13,7 @@ export default function Input({
   type = InputType.Text,
   id,
   placeholder,
+  title,
   hasError = false,
   className,
   registerAttributes,
@@ -20,6 +21,7 @@ export default function Input({
   type?: InputType;
   id: string;
   placeholder?: string;
+  title?: string;
   hasError?: boolean;
   className?: string;
   registerAttributes: UseFormRegisterReturn;
@@ -38,6 +40,7 @@ export default function Input({
       <textarea
         id={id}
         placeholder={placeholder}
+        title={title}
         className={style}
         {...registerAttributes}
       />
@@ -48,6 +51,7 @@ export default function Input({
         id={id}
         type={type === InputType.Number ? "text" : type.toString()}
         placeholder={placeholder}
+        title={title}
         inputMode={type === InputType.Number ? "numeric" : "text"}
         className={style}
         {...registerAttributes}

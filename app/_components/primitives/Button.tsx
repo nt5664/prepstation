@@ -52,6 +52,8 @@ export default function Button({
 
 function getColors(type: ButtonType): string {
   switch (type) {
+    case ButtonType.Borderless:
+      return "bg-transparent hover:bg-transparent active:bg-transparent";
     case ButtonType.Secondary:
       return "border-teal-500 text-teal-500 hover:border-teal-400 hover:text-teal-400 active:border-teal-600 active:text-teal-600 disabled:border-teal-700 disabled:text-teal-700";
     case ButtonType.Primary:

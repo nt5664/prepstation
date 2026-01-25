@@ -205,17 +205,10 @@ export default function TableEditorForm({
           name={tableFormFields.extraColumns.id}
           control={control}
           render={({ field }) => {
-            console.log("field", field.value);
-
             function handleUpdate(values: ExtraColumnDefinition[]) {
               field.onChange(values);
             }
 
-            console.log(
-              "field parsed",
-              field.value,
-              Array.isArray(field.value),
-            );
             return (
               <ExtraColumnsEditor
                 value={field.value}

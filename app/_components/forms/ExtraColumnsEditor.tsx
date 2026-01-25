@@ -111,7 +111,7 @@ function ExtraColumnsEditorRow({
       <Button
         type={ButtonType.Borderless}
         mode={ButtonMode.Button}
-        className="bg-transparent text-green-600 hover:bg-transparent active:bg-transparent hover:text-green-400"
+        className="text-green-600 hover:text-green-400"
         title="Remove column"
         onClick={onRemove}
       >

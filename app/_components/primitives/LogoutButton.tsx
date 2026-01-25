@@ -14,11 +14,7 @@ export default function LogoutButton() {
   }
 
   return (
-    <Button
-      type={ButtonType.Borderless}
-      className="bg-transparent hover:bg-transparent"
-      onClick={logout}
-    >
+    <Button type={ButtonType.Borderless} onClick={logout}>
       Logout
     </Button>
   );

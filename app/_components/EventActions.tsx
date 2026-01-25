@@ -20,16 +20,16 @@ export default function EventActions({
       <Button
         type={ButtonType.Borderless}
         title="Report event"
-        className="bg-transparent hover:bg-transparent text-amber-500 hover:text-amber-400"
+        className="text-amber-500 hover:text-amber-400"
       >
         <FlagIcon height={24} />
       </Button>
       <Button
         type={ButtonType.Borderless}
         title="Moderate this event"
-        className="bg-transparent hover:bg-transparent text-pink-500 hover:text-pink-400"
+        className="text-pink-500 hover:text-pink-400"
       >
-        <ShieldCheckIcon type={ButtonType.Borderless} height={24} />
+        <ShieldCheckIcon height={24} />
       </Button>
 
       <Separator width={2} height={24} />
