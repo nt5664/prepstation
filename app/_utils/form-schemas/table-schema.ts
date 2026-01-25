@@ -3,8 +3,17 @@ import { FormFieldConfig } from "@/app/_utils/form-schemas/form-fields-base";
 
 const extraColumnSchema = z.object({
   id: z.string(),
-  name: z.string().min(1),
-  key: z.string(),
+  name: z
+    .string()
+    .min(1)
+    .max(50, "The max length for an extra column's name is 50 characters."),
+  key: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9]+$/,
+      "The column secret can contain only alphanumeric characters.",
+    )
+    .max(15, "The max length of column secrets is 15 characters."),
 });
 
 export const tableFormSchema = z.object({

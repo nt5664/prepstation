@@ -14,7 +14,15 @@ import {
   updateEvent,
   deleteEvent as deleteEventDb,
 } from "@/app/_lib/data/event-service";
-import { createTable, updateTable } from "./data/table-service";
+import { createTable, updateTable } from "@/app/_lib/data/table-service";
+import {
+  scheduleFormSchema,
+  ScheduleFormSchema,
+} from "@/app/_utils/form-schemas/schedule-schema";
+import {
+  submitSchedule,
+  deleteSchedule,
+} from "@/app/_lib/data/schedule-service";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -78,4 +86,26 @@ export async function saveTable(
   revalidatePath("/user/events");
   revalidatePath(`/events`);
   return savedStub;
+}
+
+export async function saveSchedule(
+  data: ScheduleFormSchema,
+  eventId: string,
+  tableId: string,
+) {
+  const { matches } = scheduleFormSchema.parse(data);
+
+  const names = await submitSchedule(matches, { eventId, tableId });
+
+  revalidatePath(`/editor/${names.eventName}/${names.tableStub}`);
+  revalidatePath(`/events/${names.eventName}/${names.tableStub}`);
+  return names;
+}
+
+export async function deleteScheduleEntry(
+  entryId: string,
+  eventId: string,
+  tableId: string,
+) {
+  return (await deleteSchedule([entryId], eventId, tableId)).count === 1;
 }
