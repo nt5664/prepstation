@@ -78,6 +78,20 @@ export async function getEventSummary(name: string) {
   });
 }
 
+export async function getEventWithTable(name: string, stub: string) {
+  return prisma.event.findUnique({
+    where: { name },
+    select: {
+      title: true,
+      schedules: {
+        where: { stub },
+        select: { title: true, startDate: true },
+        take: 1,
+      },
+    },
+  });
+}
+
 export async function getEditorsById(id: string) {
   return await prisma.event.findUnique({
     where: { id },
