@@ -60,7 +60,8 @@ export default async function TableEditorPage({
           </FormHint.Field>
 
           <FormHint.Field name="Start date">
-            the date and time of when this schedule starts
+            the date and time of when this schedule starts (in your local
+            timezone)
           </FormHint.Field>
 
           <FormHint.Field name="Transition length">

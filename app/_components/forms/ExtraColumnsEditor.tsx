@@ -14,24 +14,26 @@ export default function ExtraColumnsEditor({
   value,
   max = 10,
   className,
+  onBlur,
   onUpdate,
 }: Readonly<{
   value: ExtraColumnDefinition[];
   max?: number;
   className?: string;
+  onBlur?: () => void;
   onUpdate: (values: ExtraColumnDefinition[]) => void;
 }>) {
   function handleUpdate(
     id: string,
     newName: string | null,
-    newKey?: string | null,
+    newKey?: string | null
   ) {
     onUpdate(
       value.map((x) =>
         x.id === id
           ? { id: id, name: newName ?? x.name, key: newKey ?? x.key }
-          : x,
-      ),
+          : x
+      )
     );
   }
 
@@ -41,8 +43,8 @@ export default function ExtraColumnsEditor({
         className={twMerge(
           clsx(
             "flex flex-col space-y-2 w-full p-1 border-2 rounded-sm text-gray-300 bg-gray-700 border-cyan-700",
-            className,
-          ),
+            className
+          )
         )}
       >
         {value.length ? (
@@ -57,6 +59,7 @@ export default function ExtraColumnsEditor({
                 id={x.id}
                 column={x}
                 onChange={handleUpdate}
+                onBlur={onBlur}
                 onRemove={() => onUpdate(value.filter((y) => y.id !== x.id))}
               />
             ))}
@@ -90,11 +93,13 @@ function ExtraColumnsEditorRow({
   id,
   column,
   onChange,
+  onBlur,
   onRemove,
 }: Readonly<{
   id: string;
   column: ExtraColumnDefinition;
   onChange: (id: string, name: string | null, key: string | null) => void;
+  onBlur?: () => void;
   onRemove: () => void;
 }>) {
   return (
@@ -102,11 +107,13 @@ function ExtraColumnsEditorRow({
       <SecondaryInput
         value={column.name}
         onChange={(e) => onChange(id, e.target.value, null)}
+        onBlur={onBlur}
       />
       <SecondaryInput
         placeholder="No secret"
         value={column.key}
         onChange={(e) => onChange(id, null, e.target.value)}
+        onBlur={onBlur}
       />
       <Button
         type={ButtonType.Borderless}
