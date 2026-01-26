@@ -7,13 +7,16 @@ const extraColumnSchema = z.object({
     .string()
     .min(1)
     .max(50, "The max length for an extra column's name is 50 characters."),
-  key: z
-    .string()
-    .regex(
-      /^[a-zA-Z0-9]+$/,
-      "The column secret can contain only alphanumeric characters.",
-    )
-    .max(15, "The max length of column secrets is 15 characters."),
+  key: z.union([
+    z.literal(""),
+    z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9]+$/,
+        "The column secret can contain only alphanumeric characters."
+      )
+      .max(15, "The max length of column secrets is 15 characters."),
+  ]),
 });
 
 export const tableFormSchema = z.object({
@@ -23,7 +26,7 @@ export const tableFormSchema = z.object({
     .max(32, "The max length is 32 characters.")
     .regex(
       /^[a-zA-Z0-9-]+$/,
-      "The stub can only contain alphanumeric characters and dashes.",
+      "The stub can only contain alphanumeric characters and dashes."
     ),
   tableTitle: z
     .string()
@@ -33,18 +36,22 @@ export const tableFormSchema = z.object({
   transitionTime: z
     .number("Invalid value, a positive number is required.")
     .nonnegative("The length cannot be negative"),
-  channel: z
-    .string()
-    .max(25, "The max length is 25 characters")
-    .regex(
-      /^[a-zA-Z0-9][a-zA-Z0-9_]+$/,
-      "The channel name can only contain alphanumeric characters and underscores.",
-    )
-    .optional(),
-  website: z
-    .url("The website must be a URL")
-    .max(64, "The max length is 64 characters")
-    .optional(),
+  channel: z.union([
+    z.literal(""),
+    z
+      .string()
+      .max(25, "The max length is 25 characters")
+      .regex(
+        /^[a-zA-Z0-9][a-zA-Z0-9_]+$/,
+        "The channel name can only contain alphanumeric characters and underscores."
+      ),
+  ]),
+  website: z.union([
+    z.literal(""),
+    z
+      .url("The website must be a URL")
+      .max(64, "The max length is 64 characters"),
+  ]),
   extraColumns: z
     .array(extraColumnSchema)
     .max(5, "Maximum 5 extra columns are allowed."),
