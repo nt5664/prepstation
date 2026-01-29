@@ -57,7 +57,6 @@ export async function submitSchedule(
 
   return retVal;
 }
-// HANDLE DELETION ON EVENT/TABLE DELETE
 
 export async function deleteSchedule(
   entryIds: string[],

@@ -96,6 +96,36 @@ export async function getTableEntries(stub: string, eventId: string) {
     : null;
 }
 
+export async function getTableDisplayEntries(stub: string, eventName: string) {
+  const table = await prisma.timetable.findFirst({
+    where: {
+      stub,
+      event: { name: eventName },
+    },
+    select: {
+      id: true,
+      title: true,
+      startDate: true,
+      transitionTime: true,
+      extraColumns: true,
+      entries: {
+        select: { name: true, estimate: true, extraData: true },
+      },
+    },
+  });
+
+  return table
+    ? {
+        ...table,
+        extraColumns: normalizeExtraColumns(table.extraColumns),
+        entries: table.entries.map((x) => ({
+          ...x,
+          extraData: normalizeExtraValues(x.extraData),
+        })),
+      }
+    : null;
+}
+
 export async function getTableStub(id: string) {
   return await prisma.timetable.findUnique({
     where: { id },

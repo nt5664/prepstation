@@ -61,7 +61,7 @@ export async function getEventData(name: string) {
     },
   });
 }
-
+// REWORK
 export async function getEventSummary(name: string) {
   return await prisma.event.findUnique({
     where: {
@@ -72,8 +72,18 @@ export async function getEventSummary(name: string) {
       id: true,
       title: true,
       description: true,
+      creator: { select: { name: true } },
       editors: { select: { name: true } },
-      schedules: { select: { stub: true, title: true, startDate: true } },
+      schedules: {
+        select: {
+          id: true,
+          stub: true,
+          title: true,
+          transitionTime: true,
+          startDate: true,
+          entries: { select: { estimate: true } },
+        },
+      },
     },
   });
 }
@@ -85,9 +95,31 @@ export async function getEventWithTable(name: string, stub: string) {
       title: true,
       schedules: {
         where: { stub },
-        select: { title: true, startDate: true },
+        select: { title: true, startDate: true, channel: true, website: true },
         take: 1,
       },
+    },
+  });
+}
+
+export async function getEventsOfUser(userId: string) {
+  return await prisma.event.findMany({
+    where: { creatorId: userId },
+    select: {
+      name: true,
+      title: true,
+      schedules: { select: { startDate: true } },
+    },
+  });
+}
+
+export async function getEditedEventsOfUser(userId: string) {
+  return await prisma.event.findMany({
+    where: { editors: { some: { id: userId } }, creatorId: { not: userId } },
+    select: {
+      name: true,
+      title: true,
+      schedules: { select: { startDate: true } },
     },
   });
 }
