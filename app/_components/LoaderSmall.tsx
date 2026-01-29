@@ -1,3 +1,3 @@
 export default function LoaderSmall() {
-  return <LoaderSmall />;
+  return <div className="loader-small"></div>;
 }

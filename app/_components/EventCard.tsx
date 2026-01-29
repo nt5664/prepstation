@@ -12,9 +12,9 @@ export default function EventCard({
   startDate?: Date;
   timetables?: number;
 }>) {
-  const year = startDate?.getFullYear() ?? 2026;
+  const year = startDate?.getFullYear() ?? 0;
   const month = format(startDate ?? new Date(), "LLLL");
-  const day = startDate?.getDay() ?? 12;
+  const day = startDate?.getDate() ?? 0;
 
   return (
     <div className="grid grid-cols-[8fr_1fr_1fr] grid-rows-2 h-20 pl-2 pr-1 py-1 rounded-sm bg-gray-600">

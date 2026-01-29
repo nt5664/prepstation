@@ -17,6 +17,7 @@ type ActionFn<TArg, TRet> = Action0<TRet> | Action1<TArg, TRet>;
 export default function ConfirmationButton<TArg, TRet>({
   action,
   successHandling,
+  title,
   messages = {
     question: "Are you sure?",
     pending: "Loading...",
@@ -30,6 +31,7 @@ export default function ConfirmationButton<TArg, TRet>({
   successHandling:
     | { action: "redirect"; to: string }
     | { action: "refresh" | "none" };
+  title: string;
   messages?: {
     question?: React.ReactNode;
     pending?: string;
@@ -45,7 +47,7 @@ export default function ConfirmationButton<TArg, TRet>({
   return (
     <Button
       type={ButtonType.Borderless}
-      title="Delete event"
+      title={title}
       className="text-teal-500 hover:text-teal-400 active:text-teal-600"
       onClick={() => {
         if (isOpen) return;
@@ -81,7 +83,7 @@ export default function ConfirmationButton<TArg, TRet>({
                             success: () => {
                               switch (successHandling.action) {
                                 case "redirect":
-                                  router.push("/user/events");
+                                  router.push(successHandling.to);
                                   break;
                                 case "refresh":
                                   router.refresh();
