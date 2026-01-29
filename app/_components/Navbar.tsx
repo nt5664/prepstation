@@ -26,16 +26,13 @@ export default async function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/user/events">My Events</Link>
+            <Link href="/user">Profile</Link>
           </li>
           {superuser && (
             <li>
               <Link href="/mod">Moderation</Link>
             </li>
           )}
-          <li>
-            <Link href="/user">Profile</Link>
-          </li>
           <li>
             <LogoutButton />
           </li>

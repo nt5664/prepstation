@@ -16,7 +16,7 @@ import {
   scheduleFormSchema,
   ScheduleFormSchema,
 } from "@/app/_utils/form-schemas/schedule-schema";
-import ScheduleGrid from "@/app/_components/ScheduleGrid";
+import ScheduleGrid from "@/app/_components/forms/ScheduleGrid";
 import { ExtraValue } from "@/app/_types/ExtraValue";
 import Button, {
   ButtonMode,

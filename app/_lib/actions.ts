@@ -14,7 +14,11 @@ import {
   updateEvent,
   deleteEvent as deleteEventDb,
 } from "@/app/_lib/data/event-service";
-import { createTable, updateTable } from "@/app/_lib/data/table-service";
+import {
+  createTable,
+  updateTable,
+  deleteTable as deleteTableDb,
+} from "@/app/_lib/data/table-service";
 import {
   scheduleFormSchema,
   ScheduleFormSchema,
@@ -86,6 +90,10 @@ export async function saveTable(
   revalidatePath("/user/events");
   revalidatePath(`/events`);
   return savedStub;
+}
+
+export async function deleteTable(id: string, eventName: string) {
+  return await deleteTableDb(id, eventName);
 }
 
 export async function saveSchedule(
