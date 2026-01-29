@@ -10,7 +10,7 @@ export default async function UserCard() {
   return (
     <div className="grid grid-cols-[75px_1fr] m-2 px-4 py-2 grid-rows-2 border-2 rounded-md border-cyan-900 bg-gray-600">
       <Image
-        className="col-1 row-span-full rounded-full"
+        className="col-1 row-span-full border-2 rounded-full border-emerald-600"
         src={session!.user.image ?? "/imgs/user.png"}
         alt="User's profile picture"
         width={75}
