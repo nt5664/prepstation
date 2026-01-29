@@ -12,7 +12,7 @@ export async function proxy(req: Request) {
   });
 
   if (!session) {
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return NextResponse.redirect(new URL("/", req.url));
   }
 
