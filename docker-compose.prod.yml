@@ -19,7 +19,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["node_modules/.bin/prisma", "migrate", "deploy", "--verbose"]
+    command: ["node_modules/.bin/prisma", "migrate", "deploy"]
     restart: "no"
     networks:
       - prepstation_backend
@@ -53,7 +53,8 @@ services:
     env_file:
       - .env.production
 
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}
+    command:
+      ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TOKEN}"]
 
     depends_on:
       - app
