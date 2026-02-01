@@ -5,7 +5,6 @@ import UserCard from "@/app/_components/UserCard";
 import LoaderSmall from "@/app/_components/LoaderMedium";
 
 export const dynamic = "force-dynamic";
-
 export const fetchCache = "force-no-store";
 
 export default async function UserPage() {

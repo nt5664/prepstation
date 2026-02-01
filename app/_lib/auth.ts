@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { betterAuth, TwitchProfile } from "better-auth";
+import { unstable_noStore as noStore } from "next/cache";
 import { createUser, getUser } from "@/app/_lib/data/user-service";
 
 export const auth = betterAuth({
@@ -54,6 +55,8 @@ export const auth = betterAuth({
 });
 
 export async function getServerSession() {
+  noStore();
+
   const headersObj: Record<string, string> = {};
   for (const [k, v] of await headers()) {
     headersObj[k] = v;
