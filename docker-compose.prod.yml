@@ -4,7 +4,7 @@ services:
       - .env.production
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 60s
       timeout: 5s
       retries: 5
@@ -12,13 +12,14 @@ services:
   migrate:
     build:
       context: .
-    image: prepstation:0.1alpha
+      target: builder
+    image: prepstation-migrate:0.1alpha
     env_file:
       - .env.production
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["npx", "prisma", "migrate", "deploy"]
+    command: ["node_modules/.bin/prisma", "migrate", "deploy", "--verbose"]
     restart: "no"
     networks:
       - prepstation_backend
@@ -49,9 +50,10 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: prepstation_tunnel
-    command: tunnel --no-autoupdate run
     env_file:
       - .env.production
+
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}
 
     depends_on:
       - app
