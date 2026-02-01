@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
   reactCompiler: true,
   images: {
     remotePatterns: [new URL("https://static-cdn.jtvnw.net/**")],

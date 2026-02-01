@@ -1,0 +1,66 @@
+services:
+  postgres:
+    env_file:
+      - .env.production
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: .
+    image: prepstation:0.1alpha
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+    networks:
+      - prepstation_backend
+
+  app:
+    build:
+      context: .
+
+    image: prepstation:0.1alpha
+    pull_policy: missing
+    container_name: prepstation_app
+    env_file:
+      - .env.production
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+    restart: unless-stopped
+
+    networks:
+      - prepstation_backend
+
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: prepstation_tunnel
+    command: tunnel --no-autoupdate run
+    env_file:
+      - .env.production
+
+    depends_on:
+      - app
+
+    restart: unless-stopped
+
+    networks:
+      - prepstation_backend
+
+networks:
+  prepstation_backend:
+    driver: bridge

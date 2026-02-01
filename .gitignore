@@ -20,6 +20,9 @@
 # prisma generated client
 app/_data
 
+# tunnel data
+/cloudflare
+
 # production
 /build
 
