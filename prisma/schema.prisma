@@ -31,17 +31,63 @@ enum Tables {
     EVENTTABLE
 }
 
+model Account {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  accountId String
+  providerId String
+  userId String
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([providerId, accountId])
+}
+
+
+model Session {
+  id String @id @default(cuid())
+  token String @unique
+  userId String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Verification {
+  id String @id @default(cuid())
+  identifier String
+  value String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
     id String @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     name String
+    email String? @unique
+    emailVerified Boolean? @default(true)
+    image String?
     platformId String @unique
     role Role @default(USER)
     status UserStatus @default(ACTIVE)
     events Event[] @relation("creator")
     editorOf Event[] @relation("editors")
     activity ChangeHistory[]
+    sessions Session[]
+    accounts Account[]
 }
 
 model Event {

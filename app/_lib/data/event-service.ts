@@ -17,10 +17,8 @@ export async function createEvent({
   const session = await getServerSession();
   if (!session || !isUserActive(session.user)) throw new Error("Forbidden");
 
-  const editorIds = [{ id: session!.user.internalId }];
-  const remainingEditors = editors.filter(
-    (x) => x !== session!.user.internalId,
-  );
+  const editorIds = [{ id: session!.user.id }];
+  const remainingEditors = editors.filter((x) => x !== session!.user.id);
   if (remainingEditors.length) {
     editorIds.push(
       ...(await prisma.user.findMany({
@@ -41,7 +39,7 @@ export async function createEvent({
       name,
       title,
       description,
-      creatorId: session!.user.internalId,
+      creatorId: session!.user.id,
       editors: {
         connect: editorIds,
       },
@@ -158,9 +156,9 @@ export async function updateEvent({
   )
     throw new Error("Forbidden");
 
-  const editorIds = [{ id: session!.user.internalId }];
+  const editorIds = [{ id: session!.user.id }];
   const remainingEditors = editors.filter(
-    (x) => x !== session!.user.internalId && x !== oldEditors?.creatorId,
+    (x) => x !== session!.user.id && x !== oldEditors?.creatorId,
   );
   if (remainingEditors.length) {
     editorIds.push(
@@ -200,8 +198,7 @@ export async function deleteEvent(id: string) {
     !session ||
     !event ||
     !isUserActive(session!.user) ||
-    (event!.creatorId !== session!.user.internalId &&
-      !isSuperuser(session!.user))
+    (event!.creatorId !== session!.user.id && !isSuperuser(session!.user))
   )
     throw new Error("Forbidden");
 

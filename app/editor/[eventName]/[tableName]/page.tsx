@@ -18,10 +18,7 @@ export default async function ScheduleEditorPage({
     getEventData(eventName),
   ]);
 
-  if (
-    !event ||
-    !event.editors.map((x) => x.id).includes(session!.user.internalId)
-  )
+  if (!event || !event.editors.map((x) => x.id).includes(session!.user.id))
     return notFound();
 
   const table = await getTableEntries(stub, event.id);

@@ -83,7 +83,7 @@ export async function deleteSchedule(
 }
 
 async function isUserAuthorized(
-  user: { internalId: string; status: string; role: string },
+  user: { id: string; status: string; role: string },
   editors: { id: string }[],
 ) {
   return isUserActive(user) && (isEditor(user, editors) || isSuperuser(user));

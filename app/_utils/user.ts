@@ -9,8 +9,8 @@ export function isUserActive(user: Readonly<{ status: string }> | null) {
 }
 
 export function isEditor(
-  user: Readonly<{ internalId: string }>,
+  user: Readonly<{ id: string }>,
   editors: Readonly<{ id: string }[]>,
 ) {
-  return editors.some((x) => x.id === user.internalId);
+  return editors.some((x) => x.id === user.id);
 }

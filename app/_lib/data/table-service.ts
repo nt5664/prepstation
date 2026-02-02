@@ -194,7 +194,7 @@ export async function deleteTable(id: string, eventName: string) {
 }
 
 function isUserAuthorized(
-  user: { internalId: string; status: string; role: string },
+  user: { id: string; status: string; role: string },
   editors: { id: string }[],
 ) {
   return isUserActive(user) && (isEditor(user, editors) || isSuperuser(user));

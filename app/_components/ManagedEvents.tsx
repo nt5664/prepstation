@@ -10,8 +10,8 @@ import EventGridCard from "@/app/_components/EventGridCard";
 export default async function ManagedEvents() {
   const session = await getServerSession();
 
-  const createdBy = await getEventsOfUser(session!.user.internalId);
-  const editorOf = await getEditedEventsOfUser(session!.user.internalId);
+  const createdBy = await getEventsOfUser(session!.user.id);
+  const editorOf = await getEditedEventsOfUser(session!.user.id);
 
   return (
     <div className="grid grid-cols-2 gap-2 mx-2 px-2 pb-1.5 pt-0.5 border-2 rounded-md border-cyan-900 bg-gray-600">

@@ -24,7 +24,7 @@ export default async function EventEditorPage({
 
   if (
     eventToEdit &&
-    !eventToEdit!.editors.map((x) => x.id).includes(session!.user.internalId)
+    !eventToEdit!.editors.map((x) => x.id).includes(session!.user.id)
   )
     return notFound();
 

@@ -28,8 +28,7 @@ export default async function TableEditorPage({
   if (!event) return notFound();
 
   const { id: eventId, title, editors } = event;
-  if (!editors.map((x) => x.id).includes(session!.user.internalId))
-    return notFound();
+  if (!editors.map((x) => x.id).includes(session!.user.id)) return notFound();
 
   const tableToEdit = editName
     ? await getTableSummary(editName as string, eventId)

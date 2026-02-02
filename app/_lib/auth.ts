@@ -1,18 +1,34 @@
 import { headers } from "next/headers";
 import { betterAuth, TwitchProfile } from "better-auth";
 import { unstable_noStore as noStore } from "next/cache";
-import { createUser, getUser } from "@/app/_lib/data/user-service";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { randomUUID } from "crypto";
+import { prisma } from "@/app/_lib/prisma";
 
 export const auth = betterAuth({
   appName: "PrepStation",
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
+  database: prismaAdapter(prisma, { provider: "postgresql" }),
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (data) => {
+          return {
+            data: {
+              ...data,
+              id: data.id ?? randomUUID(),
+              role: data.role ?? "USER",
+              status: data.status ?? "ACTIVE",
+            },
+          };
+        },
+      },
+    },
+  },
   user: {
     additionalFields: {
       platformId: {
-        type: "string",
-      },
-      internalId: {
         type: "string",
       },
       role: {
@@ -23,6 +39,17 @@ export const auth = betterAuth({
       },
     },
   },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["twitch"],
+      allowDifferentEmails: true,
+    },
+  },
+  session: {
+    storeSessionInDatabase: true,
+    cookieCache: { enabled: false },
+  },
   socialProviders: {
     twitch: {
       clientId: process.env.TWITCH_CLIENT_ID as string,
@@ -31,20 +58,14 @@ export const auth = betterAuth({
         if (!token.idToken) return null;
 
         const profile = parseJwt(token.idToken) as TwitchProfile;
-        const dbUser =
-          (await getUser(profile.sub)) ??
-          (await createUser(profile.sub, profile.preferred_username));
 
         return {
           user: {
             id: profile.sub,
             platformId: profile.sub,
-            internalId: dbUser.id,
-            role: dbUser.role,
-            status: dbUser.status,
             name: profile.preferred_username,
             image: profile.picture,
-            email: "REDACTED",
+            email: `${profile.sub}@redacted`,
             emailVerified: profile.email_verified,
           },
           data: profile,
