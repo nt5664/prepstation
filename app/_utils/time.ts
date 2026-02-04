@@ -4,7 +4,7 @@ export function numberToDuration(value: number) {
   const hours = Math.trunc(value / 60);
   const mins = value - hours * 60;
 
-  return `${hours}:${mins}`;
+  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 }
 
 export function getEndDate({

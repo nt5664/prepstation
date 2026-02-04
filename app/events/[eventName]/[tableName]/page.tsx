@@ -127,10 +127,15 @@ function ScheduleRow({
           <ChevronDoubleRightIcon className="text-cyan-400" height={24} />
         )}
       </div>
-      <div className={style} title={format(start, "dd MMMM yyyy HH:mm")}>
+      <div
+        className={clsx(style, "text-center")}
+        title={format(start, "dd MMMM yyyy HH:mm")}
+      >
         {format(start, "HH:mm")}
       </div>
-      <div className={style}>{numberToDuration(estimate)}</div>
+      <div className={clsx(style, "text-center")}>
+        {numberToDuration(estimate)}
+      </div>
       <div className={style} title={name}>
         {name}
       </div>

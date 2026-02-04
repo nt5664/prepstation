@@ -64,7 +64,7 @@ export default async function EventPage({
             />
           ))
         ) : (
-          <div className="text-center">
+          <div className="col-span-full text-center">
             This event doesn&apos;t have any tables...
           </div>
         )}
