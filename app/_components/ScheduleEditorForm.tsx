@@ -24,6 +24,7 @@ import Button, {
 } from "@/app/_components/primitives/Button";
 import FormSubmitButton from "@/app/_components/forms/FormSubmitButton";
 import { deleteScheduleEntry, saveSchedule } from "@/app/_lib/actions";
+import { syncExtraData } from "@/app/_utils/table";
 
 export default function ScheduleEditorForm({
   table: { id: tableId, startDate, transitionTime, extraColumns, entries },
@@ -53,9 +54,10 @@ export default function ScheduleEditorForm({
       matches:
         entries?.map((x) => ({
           ...x,
-          extraData: x.extraData.filter((y) =>
-            extraColumns.some((z) => z.name === y.name),
-          ),
+          extraData: syncExtraData(extraColumns, x.extraData, (col, value) => ({
+            name: col.name,
+            value,
+          })),
         })) ?? [],
     },
     resolver: zodResolver(scheduleFormSchema),

@@ -3,9 +3,11 @@ import { isEditor, isSuperuser, isUserActive } from "@/app/_utils/user";
 import { getEventData } from "@/app/_lib/data/event-service";
 import { prisma } from "@/app/_lib/prisma";
 import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
-import { JsonValue } from "@prisma/client/runtime/client";
-import { ExtraValue } from "@/app/_types/ExtraValue";
 import { deleteSchedule } from "./schedule-service";
+import {
+  normalizeExtraColumns,
+  normalizeExtraValues,
+} from "@/app/_utils/data-serialization";
 
 export async function createTable(
   tableData: {
@@ -198,14 +200,6 @@ function isUserAuthorized(
   editors: { id: string }[],
 ) {
   return isUserActive(user) && (isEditor(user, editors) || isSuperuser(user));
-}
-
-function normalizeExtraColumns(columns: JsonValue) {
-  return Array.isArray(columns) ? (columns as ExtraColumnDefinition[]) : [];
-}
-
-function normalizeExtraValues(values: JsonValue) {
-  return Array.isArray(values) ? (values as ExtraValue[]) : [];
 }
 
 async function stubExistsInEvent(

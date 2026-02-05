@@ -54,7 +54,7 @@ export default function TableEditorForm({
       tableTitle: isEditing ? tableToEdit.title : "",
       startDate: format(
         isEditing ? tableToEdit!.startDate : new Date(),
-        "yyyy-MM-dd'T'HH:mm"
+        "yyyy-MM-dd'T'HH:mm",
       ),
       transitionTime: isEditing ? tableToEdit!.transitionTime : 10,
       channel: isEditing ? tableToEdit!.channel : "",
@@ -65,7 +65,6 @@ export default function TableEditorForm({
   });
 
   function onSubmit(data: TableFormSchema) {
-    console.log("submitted");
     toast.promise(saveTable(data, eventName, tableToEdit?.id), {
       loading: "Submitting...",
       success: (savedId) => {
