@@ -1,14 +1,17 @@
-import DisplayGrid from "@/app/_components/DisplayGrid";
-import { getTableDisplayEntries } from "@/app/_lib/data/table-service";
-import { ExtraValue } from "@/app/_types/ExtraValue";
-import { getEndDate, numberToDuration } from "@/app/_utils/time";
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { addDays, addMinutes, format, isWithinInterval } from "date-fns";
+import { addMinutes, format, isWithinInterval } from "date-fns";
 import { notFound } from "next/navigation";
+import DisplayGrid from "@/app/_components/DisplayGrid";
+import Semaphore from "@/app/_components/Semaphore";
+import { getTableDisplayEntries } from "@/app/_lib/data/table-service";
+import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
+import { ExtraValue } from "@/app/_types/ExtraValue";
+import { getEndDate, numberToDuration } from "@/app/_utils/time";
+import { syncExtraData } from "@/app/_utils/table";
 
 export default async function SchedulePage({
   params,
@@ -41,10 +44,7 @@ export default async function SchedulePage({
             <h4>Ends: {format(endDate, "dd MMMM yyyy HH:mm")}</h4>
           </div>
 
-          <div className="flex mr-8 gap-2 items-center">
-            <div className={getSemaphoreClass(startDate, endDate, false)}></div>
-            <div className={getSemaphoreClass(startDate, endDate, true)}></div>
-          </div>
+          <Semaphore startDate={startDate} endDate={endDate} />
         </div>
       )}
 
@@ -62,8 +62,8 @@ export default async function SchedulePage({
             <div
               key={`${x}-${i}`}
               className={clsx(
-                "px-1 rounded-sm font-bold tracking-wide text-green-300",
-                x ? " bg-gray-500" : "",
+                "px-1 rounded-sm font-bold tracking-wide text-cyan-800",
+                x ? " bg-gray-400" : "",
               )}
             >
               {x}
@@ -91,6 +91,7 @@ export default async function SchedulePage({
                     visibleExtraNames.includes(x.name),
                   ),
                 }}
+                extraColumns={extraColumns}
               />
             );
           });
@@ -102,6 +103,7 @@ export default async function SchedulePage({
 
 function ScheduleRow({
   data: { start, estimate, name, extraData },
+  extraColumns,
   active,
   alternation = 0,
 }: Readonly<{
@@ -111,6 +113,7 @@ function ScheduleRow({
     name: string;
     extraData: ExtraValue[];
   };
+  extraColumns: ExtraColumnDefinition[];
   active?: boolean;
   alternation?: number;
 }>) {
@@ -139,9 +142,9 @@ function ScheduleRow({
       <div className={style} title={name}>
         {name}
       </div>
-      {extraData.map((x) => (
-        <div key={`${start}-${x.name}`} className={style} title={x.value}>
-          {x.value}
+      {syncExtraData(extraColumns, extraData, (col, val) => (
+        <div key={`${start}-${col.name}`} className={style} title={val}>
+          {val}
         </div>
       ))}
       <div>
@@ -151,15 +154,4 @@ function ScheduleRow({
       </div>
     </>
   );
-}
-
-function getSemaphoreClass(start: Date, end: Date, inverse: boolean) {
-  const currDate = new Date();
-  if (isWithinInterval(currDate, { start, end }))
-    return `semaphore${inverse ? "-inverse" : ""}`;
-  else if (
-    isWithinInterval(currDate, { start: addDays(start, -3), end: start })
-  )
-    return "semaphore-active";
-  else return "semaphore-inactive";
 }
