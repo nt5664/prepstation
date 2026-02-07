@@ -14,10 +14,12 @@ export default function FormRow({
   return (
     <div className="my-2">
       <div className="flex justify-between items-end">
-        {id && (
+        {id ? (
           <label htmlFor={id} className="font-semibold">
             {label}
           </label>
+        ) : (
+          <p className="font-semibold">{label}</p>
         )}
 
         {headerComponent}

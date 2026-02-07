@@ -89,7 +89,7 @@ export default function TableEditorForm({
         label="Table stub"
         errorMessage={String(errors.tableStub?.message ?? "")}
         headerComponent={
-          <InputLengthCounter<TableFormSchema>
+          <InputLengthCounter
             control={control}
             name={tableFormFields.tableStub.id}
             maxLength={tableFormFields.tableStub.maxLength!}

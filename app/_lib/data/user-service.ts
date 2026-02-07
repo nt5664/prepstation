@@ -14,3 +14,9 @@ export async function createUser(platformId: string, name: string) {
 export async function getUser(id: string) {
   return await prisma.user.findUnique({ where: { platformId: id } });
 }
+
+export async function getUsersByName(name: string) {
+  return await prisma.user.findMany({
+    where: { name: { equals: name, mode: "insensitive" } },
+  });
+}

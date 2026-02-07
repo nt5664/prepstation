@@ -1,3 +1,3 @@
-export default function LoaderSmall() {
+export default function LoaderMedium() {
   return <div className="loader-medium"></div>;
 }

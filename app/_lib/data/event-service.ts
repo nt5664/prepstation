@@ -17,22 +17,7 @@ export async function createEvent({
   const session = await getServerSession();
   if (!session || !isUserActive(session.user)) throw new Error("Forbidden");
 
-  const editorIds = [{ id: session!.user.id }];
-  const remainingEditors = editors.filter((x) => x !== session!.user.id);
-  if (remainingEditors.length) {
-    editorIds.push(
-      ...(await prisma.user.findMany({
-        where: {
-          name: {
-            in: remainingEditors,
-          },
-        },
-        select: {
-          id: true,
-        },
-      })),
-    );
-  }
+  const editorIds = new Set([session!.user.id, ...editors]);
 
   return await prisma.event.create({
     data: {
@@ -41,7 +26,7 @@ export async function createEvent({
       description,
       creatorId: session!.user.id,
       editors: {
-        connect: editorIds,
+        connect: Array.from(editorIds).map((x) => ({ id: x })),
       },
     },
   });
@@ -55,7 +40,8 @@ export async function getEventData(name: string) {
       name: true,
       title: true,
       description: true,
-      editors: { select: { id: true } },
+      creator: { select: { id: true, name: true } },
+      editors: { select: { id: true, name: true } },
     },
   });
 }
@@ -156,28 +142,20 @@ export async function updateEvent({
   )
     throw new Error("Forbidden");
 
-  const editorIds = [{ id: session!.user.id }];
-  const remainingEditors = editors.filter(
-    (x) => x !== session!.user.id && x !== oldEditors?.creatorId,
-  );
-  if (remainingEditors.length) {
-    editorIds.push(
-      ...(await prisma.user.findMany({
-        where: {
-          name: {
-            in: remainingEditors,
-          },
-        },
-        select: {
-          id: true,
-        },
-      })),
-    );
-  }
+  const editorIds = new Set([
+    oldEditors!.creatorId,
+    session!.user.id,
+    ...editors,
+  ]);
 
   return await prisma.event.update({
     where: { id },
-    data: { name, title, description, editors: { set: editorIds } },
+    data: {
+      name,
+      title,
+      description,
+      editors: { set: Array.from(editorIds).map((x) => ({ id: x })) },
+    },
   });
 }
 

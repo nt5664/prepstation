@@ -60,7 +60,8 @@ export default async function EventEditorPage({
           </FormHint.Field>
 
           <FormHint.Field name="Editors">
-            users, who have the ability to edit this event.{" "}
+            users, who have the ability to edit this event. The search is case
+            insensitive, however, the full name is required for a match.{" "}
             <FormHint.Highlight className="font-semibold">
               Adding editors is optional
             </FormHint.Highlight>

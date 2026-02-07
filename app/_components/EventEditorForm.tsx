@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 
@@ -19,6 +19,7 @@ import {
 } from "@/app/_utils/form-schemas/event-schema";
 import { saveEvent } from "@/app/_lib/actions";
 import FormSubmitButton from "@/app/_components/forms/FormSubmitButton";
+import EventEditorPicker from "@/app/_components/forms/EventEditorPicker";
 
 export default function EventEditorForm({
   eventToEdit,
@@ -28,6 +29,8 @@ export default function EventEditorForm({
     name: string;
     title: string;
     description: string;
+    creator: { id: string };
+    editors: { id: string; name: string }[];
   } | null;
 }>) {
   const isEditing = !!eventToEdit;
@@ -44,6 +47,9 @@ export default function EventEditorForm({
       eventName: isEditing ? eventToEdit!.name : "",
       eventTitle: isEditing ? eventToEdit!.title : "",
       description: isEditing ? eventToEdit!.description : "",
+      editors: isEditing
+        ? eventToEdit!.editors.filter((x) => x.id !== eventToEdit.creator.id)
+        : [],
     },
     resolver: zodResolver(eventFormSchema),
   });
@@ -73,7 +79,7 @@ export default function EventEditorForm({
         label="Event name"
         errorMessage={String(errors.eventName?.message ?? "")}
         headerComponent={
-          <InputLengthCounter<EventFormSchema>
+          <InputLengthCounter
             control={control}
             name={eventFormFields.eventName.id}
             maxLength={eventFormFields.eventName.maxLength!}
@@ -125,6 +131,32 @@ export default function EventEditorForm({
           id={eventFormFields.description.id}
           className="w-full px-1 py-0.5 border-2 rounded-sm placeholder-gray-400 bg-gray-700 border-cyan-700 focus:border-cyan-500 focus:text-cyan-500 focus:outline-0"
           registerAttributes={register(eventFormFields.description.id)}
+        />
+      </FormRow>
+
+      <FormRow
+        label="Editors"
+        errorMessage={String(errors.editors?.message ?? "")}
+        headerComponent={
+          <InputLengthCounter
+            control={control}
+            name={eventFormFields.editors.id}
+            maxLength={eventFormFields.editors.maxLength!}
+          />
+        }
+      >
+        <Controller
+          name={eventFormFields.editors.id}
+          control={control}
+          render={({ field }) => (
+            <EventEditorPicker
+              values={field.value}
+              max={eventFormFields.editors.maxLength!}
+              creatorId={eventToEdit?.id}
+              onUpdate={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
         />
       </FormRow>
 

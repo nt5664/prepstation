@@ -27,6 +27,7 @@ import {
   submitSchedule,
   deleteSchedule,
 } from "@/app/_lib/data/schedule-service";
+import { getUsersByName } from "@/app/_lib/data/user-service";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -36,15 +37,22 @@ export async function saveEvent(
     eventName: name,
     eventTitle: title,
     description,
+    editors,
   } = eventFormSchema.parse(data);
 
   const { name: savedName } = id
-    ? await updateEvent({ id, name, title, description, editors: [] })
+    ? await updateEvent({
+        id,
+        name,
+        title,
+        description,
+        editors: editors.map((x) => x.id),
+      })
     : await createEvent({
         name,
         title,
         description,
-        editors: [],
+        editors: editors.map((x) => x.id),
       });
 
   revalidatePath("/user/events");
@@ -116,4 +124,12 @@ export async function deleteScheduleEntry(
   tableId: string,
 ) {
   return (await deleteSchedule([entryId], eventId, tableId)).count === 1;
+}
+
+export async function getEditorUsers(name: string) {
+  return (await getUsersByName(name)).map((x) => ({
+    id: x.id,
+    name: x.name,
+    image: x.image,
+  }));
 }

@@ -5,12 +5,16 @@ import { twMerge } from "tailwind-merge";
 export default function SecondaryInput({
   placeholder,
   value,
+  max,
+  disabled,
   className,
   onChange,
   onBlur,
 }: Readonly<{
   placeholder?: string;
   value: string | number;
+  max?: number;
+  disabled?: boolean;
   className?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: () => void;
@@ -20,11 +24,13 @@ export default function SecondaryInput({
       className={twMerge(
         clsx(
           "mx-0.5 px-1 w-full rounded-sm border-2 bg-gray-600 border-cyan-600 placeholder:italic focus:border-cyan-400 focus:text-cyan-400 focus:outline-0",
-          className
-        )
+          className,
+        ),
       )}
       placeholder={placeholder}
       value={value}
+      max={max}
+      disabled={disabled}
       onChange={onChange}
       onBlur={onBlur}
     />
