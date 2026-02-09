@@ -13,7 +13,6 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
-# Opcionális: gyors szintaxis ellenőrzés
 if ! command -v docker &>/dev/null; then
   echo "ERROR: Docker cannot be found"
   exit 1
