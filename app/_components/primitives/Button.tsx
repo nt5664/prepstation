@@ -27,7 +27,9 @@ export default function Button({
   className?: string;
   disabled?: boolean;
   title?: string;
-  onClick?: () => void;
+  onClick?:
+    | (() => void)
+    | ((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void);
   children: React.ReactNode;
 }>) {
   return (
