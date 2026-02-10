@@ -15,6 +15,7 @@ export async function generateMetadata({
 
   return {
     title: event?.title,
+    description: `${event?.title} has ${event?.schedules.length} schedules on PrepStation`,
   };
 }
 

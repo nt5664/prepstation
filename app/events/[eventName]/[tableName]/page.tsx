@@ -12,6 +12,24 @@ import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
 import { ExtraValue } from "@/app/_types/ExtraValue";
 import { getEndDate, numberToDuration } from "@/app/_utils/time";
 import { syncExtraData } from "@/app/_utils/table";
+import { getTimeFormatString } from "@/app/_utils/prefs";
+import { getPrefTimeFormat } from "@/app/_lib/pref";
+import { getEventSummary } from "@/app/_lib/data/event-service";
+
+export async function generateMetadata({
+  params,
+}: Readonly<{ params: Promise<{ eventName: string; tableName: string }> }>) {
+  const { eventName, tableName } = await params;
+  const [table, event] = await Promise.all([
+    getTableDisplayEntries(tableName, eventName),
+    getEventSummary(eventName),
+  ]);
+
+  return {
+    title: `${table?.title} [${event?.title}]`,
+    description: `${table?.title} in ${event?.title} is on PrepStation`,
+  };
+}
 
 export default async function SchedulePage({
   params,
@@ -35,13 +53,15 @@ export default async function SchedulePage({
     (x) => !x.key || secretValues.has(x.key),
   );
 
+  const timeFormat = getTimeFormatString(await getPrefTimeFormat());
+
   return (
     <div className="flex flex-col w-4/5 mx-auto gap-4">
       {entries.length && (
         <div className="flex justify-between">
           <div className="flex flex-col ml-8">
-            <h4>Starts: {format(startDate, "dd MMMM yyyy HH:mm")}</h4>
-            <h4>Ends: {format(endDate, "dd MMMM yyyy HH:mm")}</h4>
+            <h4>Starts: {format(startDate, `dd MMMM yyyy ${timeFormat}`)}</h4>
+            <h4>Ends: {format(endDate, `dd MMMM yyyy ${timeFormat}`)}</h4>
           </div>
 
           <Semaphore startDate={startDate} endDate={endDate} />
@@ -84,6 +104,7 @@ export default async function SchedulePage({
                   end: addMinutes(start, x.estimate),
                 })}
                 alternation={i % 2}
+                timeFormat={timeFormat}
                 data={{
                   ...x,
                   start,
@@ -106,6 +127,7 @@ function ScheduleRow({
   extraColumns,
   active,
   alternation = 0,
+  timeFormat,
 }: Readonly<{
   data: {
     start: Date;
@@ -116,6 +138,7 @@ function ScheduleRow({
   extraColumns: ExtraColumnDefinition[];
   active?: boolean;
   alternation?: number;
+  timeFormat: string;
 }>) {
   const style = clsx(
     "px-1 rounded-sm truncate",
@@ -132,9 +155,9 @@ function ScheduleRow({
       </div>
       <div
         className={clsx(style, "text-center")}
-        title={format(start, "dd MMMM yyyy HH:mm")}
+        title={format(start, `dd MMMM yyyy ${timeFormat}`)}
       >
-        {format(start, "HH:mm")}
+        {format(start, timeFormat)}
       </div>
       <div className={clsx(style, "text-center")}>
         {numberToDuration(estimate)}
