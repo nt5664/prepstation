@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/app/_lib/auth";
 import { revalidatePath } from "next/cache";
 
@@ -6,7 +6,7 @@ export const config = {
   matcher: ["/editor/:path*", "/user/:path*", "/mod/:path*"],
 };
 
-export async function proxy(req: Request) {
+export async function proxy(req: NextRequest) {
   const session = await auth.api.getSession({
     headers: Object.fromEntries(req.headers),
   });
@@ -15,6 +15,9 @@ export async function proxy(req: Request) {
     revalidatePath("/", "layout");
     return NextResponse.redirect(new URL("/", req.url));
   }
+
+  if (session!.user.status === "SUSPENDED")
+    return NextResponse.redirect("/suspended");
 
   return NextResponse.next();
 }

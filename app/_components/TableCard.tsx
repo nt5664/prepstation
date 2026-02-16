@@ -5,6 +5,7 @@ import ConfirmationButton from "./ConfirmationButton";
 import { deleteTable } from "../_lib/actions";
 import {
   ArchiveBoxXMarkIcon,
+  EyeSlashIcon,
   NumberedListIcon,
   PencilIcon,
 } from "@heroicons/react/24/outline";
@@ -12,7 +13,15 @@ import {
 export default function TableCard({
   eventName,
   isEditor,
-  table: { id, stub, title: displayTitle, startDate, entries, transitionTime },
+  table: {
+    id,
+    stub,
+    title: displayTitle,
+    startDate,
+    entries,
+    transitionTime,
+    unlisted,
+  },
 }: Readonly<{
   eventName: string;
   isEditor: boolean;
@@ -23,6 +32,7 @@ export default function TableCard({
     startDate: Date;
     entries: { estimate: number }[];
     transitionTime: number;
+    unlisted: boolean;
   };
 }>) {
   return (
@@ -45,46 +55,57 @@ export default function TableCard({
         )}
       </div>
       {isEditor && (
-        <div className="flex mt-1 gap-2 justify-end">
-          <Link
-            className="text-teal-500 hover:text-teal-400"
-            title="Edit table"
-            href={`/editor/${eventName}?sname=${stub}`}
-          >
-            <PencilIcon height={20} />
-          </Link>
-          <Link
-            className="text-teal-500 hover:text-teal-400"
-            title="Edit entries"
-            href={`/editor/${eventName}/${stub}`}
-          >
-            <NumberedListIcon height={20} />
-          </Link>
-          <ConfirmationButton
-            action={{
-              type: "no-arg",
-              fn: async () => {
-                "use server";
-                await deleteTable(id, eventName);
-              },
-            }}
-            successHandling={{ action: "refresh" }}
-            title="Delete table"
-            messages={{
-              question: (
-                <span>
-                  Are you sure you want to delete this table?{" "}
-                  <strong>(this action cannot be undone!)</strong>
-                </span>
-              ),
-              pending: "Deleting table...",
-              success: "Table has been deleted successfully",
-              error: "Could not delete the table",
-            }}
-            buttonLabels={{ yes: "Delete", no: "Cancel" }}
-          >
-            <ArchiveBoxXMarkIcon height={20} />
-          </ConfirmationButton>
+        <div className="flex justify-between">
+          <div className="flex">
+            {unlisted && (
+              <EyeSlashIcon
+                className="self-center text-emerald-200"
+                title="Hidden schedule"
+                height={18}
+              />
+            )}
+          </div>
+          <div className="flex mt-1 gap-2">
+            <Link
+              className="text-teal-500 hover:text-teal-400"
+              title="Edit table"
+              href={`/editor/${eventName}?sname=${stub}`}
+            >
+              <PencilIcon height={20} />
+            </Link>
+            <Link
+              className="text-teal-500 hover:text-teal-400"
+              title="Edit entries"
+              href={`/editor/${eventName}/${stub}`}
+            >
+              <NumberedListIcon height={20} />
+            </Link>
+            <ConfirmationButton
+              action={{
+                type: "no-arg",
+                fn: async () => {
+                  "use server";
+                  await deleteTable(id, eventName);
+                },
+              }}
+              successHandling={{ action: "refresh" }}
+              title="Delete table"
+              messages={{
+                question: (
+                  <span>
+                    Are you sure you want to delete this table?{" "}
+                    <strong>(this action cannot be undone!)</strong>
+                  </span>
+                ),
+                pending: "Deleting table...",
+                success: "Table has been deleted successfully",
+                error: "Could not delete the table",
+              }}
+              buttonLabels={{ yes: "Delete", no: "Cancel" }}
+            >
+              <ArchiveBoxXMarkIcon height={20} />
+            </ConfirmationButton>
+          </div>
         </div>
       )}
     </div>

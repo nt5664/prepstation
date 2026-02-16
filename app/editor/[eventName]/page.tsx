@@ -1,7 +1,7 @@
 import FormHint from "@/app/_components/forms/FormHint";
 import TableEditorForm from "@/app/_components/TableEditorForm";
 import { getServerSession } from "@/app/_lib/auth";
-import { getEventData } from "@/app/_lib/data/event-service";
+import { getEventHeader } from "@/app/_lib/data/event-service";
 import { getTableSummary } from "@/app/_lib/data/table-service";
 import { notFound } from "next/navigation";
 
@@ -24,7 +24,7 @@ export default async function TableEditorPage({
 
   if (!session) return notFound();
 
-  const event = await getEventData(eventName);
+  const event = await getEventHeader(eventName);
   if (!event) return notFound();
 
   const { id: eventId, title, editors } = event;
@@ -65,6 +65,11 @@ export default async function TableEditorPage({
 
           <FormHint.Field name="Transition length">
             the time in minutes of how much time is needed between the entries
+          </FormHint.Field>
+
+          <FormHint.Field name="Unlisted">
+            whether the table shouldn&apos;t appear on its event; unlisted
+            tables can be reached only via their stubs
           </FormHint.Field>
 
           <FormHint.Field name="Channel name">

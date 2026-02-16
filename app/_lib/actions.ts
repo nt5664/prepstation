@@ -79,6 +79,7 @@ export async function saveTable(
     channel,
     website,
     extraColumns,
+    unlisted,
   } = tableFormSchema.parse(data);
 
   const objCommon = {
@@ -88,6 +89,7 @@ export async function saveTable(
     transitionTime,
     channel: channel ?? "",
     website: website ?? "",
+    unlisted,
     extraColumns: extraColumns ?? [],
   };
 

@@ -14,7 +14,7 @@ import { getEndDate, numberToDuration } from "@/app/_utils/time";
 import { syncExtraData } from "@/app/_utils/table";
 import { getTimeFormatString } from "@/app/_utils/prefs";
 import { getPrefTimeFormat } from "@/app/_lib/pref";
-import { getEventSummary } from "@/app/_lib/data/event-service";
+import { getEventWithTables } from "@/app/_lib/data/event-service";
 
 export async function generateMetadata({
   params,
@@ -22,7 +22,7 @@ export async function generateMetadata({
   const { eventName, tableName } = await params;
   const [table, event] = await Promise.all([
     getTableDisplayEntries(tableName, eventName),
-    getEventSummary(eventName),
+    getEventWithTables(eventName),
   ]);
 
   return {

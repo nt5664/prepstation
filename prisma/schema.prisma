@@ -16,19 +16,17 @@ enum Role {
 enum UserStatus {
     ACTIVE
     SUSPENDED
-    BANNED
 }
 
 enum EventStatus {
     ACTIVE
     HIDDEN
-    DELETED
 }
 
-enum Tables {
+enum ActivityTarget {
     USER
     EVENT
-    EVENTTABLE
+    SCHEDULE
 }
 
 model Account {
@@ -83,9 +81,12 @@ model User {
     platformId String @unique
     role Role @default(USER)
     status UserStatus @default(ACTIVE)
+    modNote String? @db.VarChar(200)
     events Event[] @relation("creator")
     editorOf Event[] @relation("editors")
-    activity ChangeHistory[]
+    activity ActivityHistory[]
+    reports Report[] @relation("reportsCreated")
+    reportsHandled Report[] @relation("reportsHandled")
     sessions Session[]
     accounts Account[]
 }
@@ -98,10 +99,12 @@ model Event {
     title String @db.VarChar(64)
     description String @db.VarChar(200)
     visibility EventStatus @default(ACTIVE)
+    modNote String? @db.VarChar(200)
     creator User @relation(fields: [creatorId], references: [id], name: "creator")
     creatorId String
     editors User[] @relation(name: "editors")
     schedules Timetable[]
+    reports Report[]
 }
 
 model Timetable {
@@ -115,6 +118,7 @@ model Timetable {
     startDate DateTime @default(now())
     transitionTime Int
     delay Int
+    unlisted Boolean @default(false)
     extraColumns Json
     event Event @relation(fields: [eventId], references: [id])
     eventId String
@@ -132,11 +136,26 @@ model TimetableEntry {
     timetableId String
 }
 
-model ChangeHistory {
+model ActivityHistory {
     id String @id @default(uuid())
     createdAt DateTime @default(now())
     instigator User @relation(fields: [instigatorId], references: [id])
     instigatorId String
-    affectedTable Tables
+    affects ActivityTarget
+    affectedId String?
     payload Json
+}
+
+model Report {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    handledAt DateTime?
+    message String @db.VarChar(200)
+    reporter User @relation(fields: [reporterId], references: [id], name: "reportsCreated")
+    reporterId String
+    reported Event @relation(fields: [reportedId], references: [id])
+    reportedId String
+    handled Boolean @default(false)
+    handledBy User @relation(fields: [handlerId], references: [id], name: "reportsHandled")
+    handlerId String
 }

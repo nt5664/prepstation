@@ -13,7 +13,7 @@ const extraColumnSchema = z.object({
       .string()
       .regex(
         /^[a-zA-Z0-9]+$/,
-        "The column secret can contain only alphanumeric characters."
+        "The column secret can contain only alphanumeric characters.",
       )
       .max(15, "The max length of column secrets is 15 characters."),
   ]),
@@ -26,7 +26,7 @@ export const tableFormSchema = z.object({
     .max(32, "The max length is 32 characters.")
     .regex(
       /^[a-zA-Z0-9-]+$/,
-      "The stub can only contain alphanumeric characters and dashes."
+      "The stub can only contain alphanumeric characters and dashes.",
     ),
   tableTitle: z
     .string()
@@ -36,6 +36,7 @@ export const tableFormSchema = z.object({
   transitionTime: z
     .number("Invalid value, a positive number is required.")
     .nonnegative("The length cannot be negative"),
+  unlisted: z.boolean(),
   channel: z.union([
     z.literal(""),
     z
@@ -43,7 +44,7 @@ export const tableFormSchema = z.object({
       .max(25, "The max length is 25 characters")
       .regex(
         /^[a-zA-Z0-9][a-zA-Z0-9_]+$/,
-        "The channel name can only contain alphanumeric characters and underscores."
+        "The channel name can only contain alphanumeric characters and underscores.",
       ),
   ]),
   website: z.union([
@@ -67,4 +68,5 @@ export const tableFormFields: FormFieldConfig<TableFormSchema> = {
   startDate: { id: "startDate" },
   transitionTime: { id: "transitionTime" },
   extraColumns: { id: "extraColumns", maxLength: 5 },
+  unlisted: { id: "unlisted" },
 };

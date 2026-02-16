@@ -1,5 +1,5 @@
-import { ExtraColumnDefinition } from "../_types/ExtraColumnDefinition";
-import { ExtraValue } from "../_types/ExtraValue";
+import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
+import { ExtraValue } from "@/app/_types/ExtraValue";
 
 export function syncExtraData<T>(
   extraColumns: ExtraColumnDefinition[],

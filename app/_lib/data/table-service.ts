@@ -1,13 +1,15 @@
+import { after } from "next/server";
 import { getServerSession } from "@/app/_lib/auth";
 import { isEditor, isSuperuser, isUserActive } from "@/app/_utils/user";
-import { getEventData } from "@/app/_lib/data/event-service";
+import { getEventHeader } from "@/app/_lib/data/event-service";
 import { prisma } from "@/app/_lib/prisma";
 import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
-import { deleteSchedule } from "./schedule-service";
+import { deleteSchedule } from "@/app/_lib/data/schedule-service";
 import {
   normalizeExtraColumns,
   normalizeExtraValues,
 } from "@/app/_utils/data-serialization";
+import { logSchedule } from "@/app/_lib/data/activity-service";
 
 export async function createTable(
   tableData: {
@@ -18,12 +20,13 @@ export async function createTable(
     extraColumns: ExtraColumnDefinition[];
     channel: string;
     website: string;
+    unlisted: boolean;
   },
   eventName: string,
 ) {
   const [session, event] = await Promise.all([
     getServerSession(),
-    getEventData(eventName),
+    getEventHeader(eventName),
   ]);
   if (!session || !event || !isUserAuthorized(session!.user, event!.editors))
     throw new Error("Forbidden");
@@ -31,13 +34,36 @@ export async function createTable(
   if (await stubExistsInEvent(tableData.stub, event!.id))
     throw new Error("This event already has a table with the same stub");
 
-  return await prisma.timetable.create({
+  const createdTable = await prisma.timetable.create({
     data: {
       ...tableData,
       delay: 0,
       eventId: event!.id,
     },
   });
+
+  after(
+    async () =>
+      await logSchedule({
+        instigatorId: session!.user.id,
+        affectedId: createdTable.id,
+        payload: {
+          action: "created",
+          data: {
+            stub: tableData.stub,
+            title: tableData.title,
+            channel: tableData.channel,
+            website: tableData.website,
+            startDate: tableData.startDate,
+            transition: tableData.transitionTime,
+            unlisted: tableData.unlisted,
+            extraColumns: tableData.extraColumns,
+          },
+        },
+      }),
+  );
+
+  return createdTable;
 }
 
 export async function getTableSummary(stub: string, eventId: string) {
@@ -55,6 +81,7 @@ export async function getTableSummary(stub: string, eventId: string) {
       extraColumns: true,
       channel: true,
       website: true,
+      unlisted: true,
     },
   });
 
@@ -145,13 +172,14 @@ export async function updateTable(
     extraColumns: ExtraColumnDefinition[];
     channel: string;
     website: string;
+    unlisted: boolean;
   },
   eventName: string,
 ) {
   const { id, ...tableIdless } = tableData;
   const [session, event, oldStub] = await Promise.all([
     getServerSession(),
-    getEventData(eventName),
+    getEventHeader(eventName),
     getTableStub(id),
   ]);
   if (!session || !event || !isUserAuthorized(session!.user, event!.editors))
@@ -163,7 +191,7 @@ export async function updateTable(
   )
     throw new Error("This event already has a table with the same stub");
 
-  return await prisma.timetable.update({
+  const updatedTable = await prisma.timetable.update({
     where: {
       id: tableData.id,
     },
@@ -171,12 +199,35 @@ export async function updateTable(
       ...tableIdless,
     },
   });
+
+  after(
+    async () =>
+      await logSchedule({
+        instigatorId: session!.user.id,
+        affectedId: id,
+        payload: {
+          action: "edited",
+          data: {
+            stub: tableData.stub,
+            title: tableData.title,
+            channel: tableData.channel,
+            website: tableData.website,
+            startDate: tableData.startDate,
+            transition: tableData.transitionTime,
+            unlisted: tableData.unlisted,
+            extraColumns: tableData.extraColumns,
+          },
+        },
+      }),
+  );
+
+  return updatedTable;
 }
 
 export async function deleteTable(id: string, eventName: string) {
   const [session, event] = await Promise.all([
     getServerSession(),
-    getEventData(eventName),
+    getEventHeader(eventName),
   ]);
   if (!session || !event || !isUserAuthorized(session!.user, event!.editors))
     throw new Error("Forbidden");
@@ -192,7 +243,20 @@ export async function deleteTable(id: string, eventName: string) {
       id,
     );
 
-  return await prisma.timetable.delete({ where: { id } });
+  const deletedTable = await prisma.timetable.delete({ where: { id } });
+
+  after(
+    async () =>
+      await logSchedule({
+        instigatorId: session!.user.id,
+        affectedId: id,
+        payload: {
+          action: "deleted",
+        },
+      }),
+  );
+
+  return deletedTable;
 }
 
 function isUserAuthorized(

@@ -1,7 +1,9 @@
+import { after } from "next/server";
 import { getServerSession } from "@/app/_lib/auth";
 import { prisma } from "@/app/_lib/prisma";
 import { isSuperuser, isUserActive } from "@/app/_utils/user";
 import { deleteTable } from "@/app/_lib/data/table-service";
+import { logEvent } from "@/app/_lib/data/activity-service";
 
 export async function createEvent({
   name,
@@ -19,7 +21,7 @@ export async function createEvent({
 
   const editorIds = new Set([session!.user.id, ...editors]);
 
-  return await prisma.event.create({
+  const createdEvent = await prisma.event.create({
     data: {
       name,
       title,
@@ -30,9 +32,29 @@ export async function createEvent({
       },
     },
   });
+
+  after(
+    async () =>
+      await logEvent({
+        instigatorId: session!.user.id,
+        affectedId: createdEvent.id,
+        payload: {
+          action: "created",
+          data: {
+            name,
+            title,
+            description,
+            visibility: createdEvent.visibility,
+            editors: Array.from(editorIds),
+          },
+        },
+      }),
+  );
+
+  return createdEvent;
 }
 
-export async function getEventData(name: string) {
+export async function getEventHeader(name: string) {
   return await prisma.event.findUnique({
     where: { name },
     select: {
@@ -45,8 +67,8 @@ export async function getEventData(name: string) {
     },
   });
 }
-// REWORK
-export async function getEventSummary(name: string) {
+
+export async function getEventWithTables(name: string) {
   return await prisma.event.findUnique({
     where: {
       name,
@@ -66,6 +88,7 @@ export async function getEventSummary(name: string) {
           transitionTime: true,
           startDate: true,
           entries: { select: { estimate: true } },
+          unlisted: true,
         },
       },
     },
@@ -79,7 +102,13 @@ export async function getEventWithTable(name: string, stub: string) {
       title: true,
       schedules: {
         where: { stub },
-        select: { title: true, startDate: true, channel: true, website: true },
+        select: {
+          title: true,
+          startDate: true,
+          channel: true,
+          website: true,
+          unlisted: true,
+        },
         take: 1,
       },
     },
@@ -148,7 +177,7 @@ export async function updateEvent({
     ...editors,
   ]);
 
-  return await prisma.event.update({
+  const updatedEvent = await prisma.event.update({
     where: { id },
     data: {
       name,
@@ -157,6 +186,26 @@ export async function updateEvent({
       editors: { set: Array.from(editorIds).map((x) => ({ id: x })) },
     },
   });
+
+  after(
+    async () =>
+      await logEvent({
+        instigatorId: session!.user.id,
+        affectedId: id,
+        payload: {
+          action: "edited",
+          data: {
+            name,
+            title,
+            description,
+            visibility: updatedEvent.visibility,
+            editors: Array.from(editorIds),
+          },
+        },
+      }),
+  );
+
+  return updatedEvent;
 }
 
 export async function deleteEvent(id: string) {
@@ -188,7 +237,20 @@ export async function deleteEvent(id: string) {
         ),
     );
 
-  return await prisma.event.delete({ where: { id } });
+  const deletedEvent = await prisma.event.delete({ where: { id } });
+
+  after(
+    async () =>
+      await logEvent({
+        instigatorId: session!.user.id,
+        affectedId: id,
+        payload: {
+          action: "deleted",
+        },
+      }),
+  );
+
+  return deletedEvent;
 }
 
 async function getEventEditorsById(eventId: string) {

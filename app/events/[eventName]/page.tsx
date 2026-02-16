@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import EventActions from "@/app/_components/EventActions";
 import EventCard from "@/app/_components/EventCard";
 import { getServerSession } from "@/app/_lib/auth";
-import { getEventSummary } from "@/app/_lib/data/event-service";
+import { getEventWithTables } from "@/app/_lib/data/event-service";
 import { isSuperuser } from "@/app/_utils/user";
 import TableCard from "@/app/_components/TableCard";
 import { getEarliestDate } from "@/app/_utils/time";
@@ -11,7 +11,7 @@ export async function generateMetadata({
   params,
 }: Readonly<{ params: Promise<{ eventName: string }> }>) {
   const { eventName } = await params;
-  const event = await getEventSummary(eventName);
+  const event = await getEventWithTables(eventName);
 
   return {
     title: event?.title,
@@ -25,7 +25,7 @@ export default async function EventPage({
   params: Promise<{ eventName: string }>;
 }>) {
   const { eventName } = await params;
-  const event = await getEventSummary(eventName);
+  const event = await getEventWithTables(eventName);
   if (!event) notFound();
 
   const session = await getServerSession();
@@ -56,14 +56,16 @@ export default async function EventPage({
 
       <div className="grid grid-cols-4 p-2 rounded-sm bg-gray-600">
         {event!.schedules.length ? (
-          event!.schedules.map((x) => (
-            <TableCard
-              key={`${eventName}/${x.title}`}
-              eventName={eventName}
-              isEditor={isEditor}
-              table={x}
-            />
-          ))
+          event!.schedules
+            .filter((x) => isEditor || !x.unlisted)
+            .map((x) => (
+              <TableCard
+                key={`${eventName}/${x.title}`}
+                eventName={eventName}
+                isEditor={isEditor}
+                table={x}
+              />
+            ))
         ) : (
           <div className="col-span-full text-center">
             This event doesn&apos;t have any tables...

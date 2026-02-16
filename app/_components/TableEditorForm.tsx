@@ -37,6 +37,7 @@ export default function TableEditorForm({
     channel: string;
     website: string;
     extraColumns: ExtraColumnDefinition[];
+    unlisted: boolean;
   } | null;
 }>) {
   const isEditing = !!tableToEdit;
@@ -57,6 +58,7 @@ export default function TableEditorForm({
         "yyyy-MM-dd'T'HH:mm",
       ),
       transitionTime: isEditing ? tableToEdit!.transitionTime : 10,
+      unlisted: isEditing ? tableToEdit!.unlisted : false,
       channel: isEditing ? tableToEdit!.channel : "",
       website: isEditing ? tableToEdit!.website : "",
       extraColumns: isEditing ? tableToEdit!.extraColumns : [],
@@ -81,7 +83,7 @@ export default function TableEditorForm({
   function handleBack() {
     router.back();
   }
-  console.log("errors", errors);
+
   return (
     <form className="m-4" noValidate onSubmit={handleSubmit(onSubmit)}>
       <FormRow
@@ -151,6 +153,20 @@ export default function TableEditorForm({
           registerAttributes={register(tableFormFields.transitionTime.id, {
             setValueAs: (val) => Number(val),
           })}
+        />
+      </FormRow>
+
+      <FormRow
+        id={tableFormFields.unlisted.id}
+        label="Unlisted"
+        errorMessage={String(errors.unlisted?.message ?? "")}
+      >
+        <Input
+          className="w-auto"
+          id={tableFormFields.unlisted.id}
+          type={InputType.CheckBox}
+          hasError={errors.unlisted?.message !== undefined}
+          registerAttributes={register(tableFormFields.unlisted.id)}
         />
       </FormRow>
 

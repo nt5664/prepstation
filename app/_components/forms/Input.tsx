@@ -7,6 +7,7 @@ export enum InputType {
   LongText = "textarea",
   Number = "number",
   DateTime = "datetime-local",
+  CheckBox = "checkbox",
 }
 
 export default function Input({

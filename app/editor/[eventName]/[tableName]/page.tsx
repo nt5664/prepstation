@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import ScheduleEditorForm from "@/app/_components/ScheduleEditorForm";
 import { getServerSession } from "@/app/_lib/auth";
-import { getEventData } from "@/app/_lib/data/event-service";
+import { getEventHeader } from "@/app/_lib/data/event-service";
 import { getTableEntries } from "@/app/_lib/data/table-service";
 
 export const metadata = {
@@ -15,7 +15,7 @@ export default async function ScheduleEditorPage({
 
   const [session, event] = await Promise.all([
     getServerSession(),
-    getEventData(eventName),
+    getEventHeader(eventName),
   ]);
 
   if (!event || !event.editors.map((x) => x.id).includes(session!.user.id))

@@ -1,8 +1,10 @@
+import { after } from "next/server";
 import { isEditor, isSuperuser, isUserActive } from "@/app/_utils/user";
 import { getServerSession } from "@/app/_lib/auth";
 import { prisma } from "@/app/_lib/prisma";
 import { getEditorsById } from "@/app/_lib/data/event-service";
 import { getTableStub } from "@/app/_lib/data/table-service";
+import { logSchedule } from "@/app/_lib/data/activity-service";
 
 export async function submitSchedule(
   entries: {
@@ -30,7 +32,7 @@ export async function submitSchedule(
   const retVal = { eventName: event.name, tableStub: stub.stub };
   if (!entries.length) return retVal;
 
-  await prisma.$transaction(
+  const transaction = await prisma.$transaction(
     async (ctx) =>
       await Promise.all(
         entries.map((x) =>
@@ -55,6 +57,24 @@ export async function submitSchedule(
       ),
   );
 
+  after(
+    async () =>
+      await logSchedule({
+        instigatorId: session!.user.id,
+        affectedId: tableId,
+        payload: {
+          action: "entries",
+          data: transaction.map((x) => ({
+            id: x.id,
+            created: x.createdAt,
+            name: x.name,
+            estimate: x.estimate,
+            extraData: x.extraData,
+          })),
+        },
+      }),
+  );
+
   return retVal;
 }
 
@@ -77,9 +97,23 @@ export async function deleteSchedule(
   )
     throw new Error("Forbidden");
 
-  return prisma.timetableEntry.deleteMany({
+  const deletedEntries = await prisma.timetableEntry.deleteMany({
     where: { id: { in: entryIds }, timetableId: tableId },
   });
+
+  after(
+    async () =>
+      await logSchedule({
+        instigatorId: session!.user.id,
+        affectedId: tableId,
+        payload: {
+          action: "entriesDeleted",
+          data: { count: deletedEntries.count, ids: entryIds },
+        },
+      }),
+  );
+
+  return deletedEntries;
 }
 
 async function isUserAuthorized(

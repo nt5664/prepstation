@@ -37,6 +37,9 @@ export const auth = betterAuth({
       status: {
         type: "string",
       },
+      modNote: {
+        type: "string",
+      },
     },
   },
   account: {
