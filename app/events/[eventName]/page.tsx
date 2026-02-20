@@ -37,6 +37,7 @@ export default async function EventPage({
     <div className="flex flex-col gap-2.5 w-3/5 mx-auto my-10 p-2 rounded-md border-2 border-cyan-900 bg-gray-700">
       <EventCard
         title={event!.title}
+        description={event!.description}
         editors={editorNames}
         timetables={event.schedules.length}
         startDate={getEarliestDate(event.schedules) ?? undefined}

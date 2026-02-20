@@ -1,7 +1,7 @@
 import EventEditorForm from "@/app/_components/EventEditorForm";
 import FormHint from "@/app/_components/forms/FormHint";
 import { getServerSession } from "@/app/_lib/auth";
-import { getEventData } from "@/app/_lib/data/event-service";
+import { getEventHeader } from "@/app/_lib/data/event-service";
 import { notFound } from "next/navigation";
 
 export const metadata = {
@@ -19,7 +19,7 @@ export default async function EventEditorPage({
   ]);
 
   const eventToEdit = editName
-    ? await getEventData(editName as string)
+    ? await getEventHeader(editName as string)
     : undefined;
 
   if (
