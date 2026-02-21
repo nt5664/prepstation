@@ -1,15 +1,14 @@
 import {
-  FlagIcon,
   FolderPlusIcon,
   PencilSquareIcon,
   ShieldCheckIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import Button, { ButtonType } from "@/app/_components/primitives/Button";
 import Separator from "@/app/_components/primitives/Separator";
 import { deleteEvent } from "@/app/_lib/actions";
 import ConfirmationButton from "@/app/_components/ConfirmationButton";
+import EventReportButton from "@/app/_components/EventReportButton";
 
 export default async function EventActions({
   eventId,
@@ -26,24 +25,16 @@ export default async function EventActions({
 }>) {
   return (
     <div className="flex gap-4">
-      {!isMod && (
-        <Button
-          type={ButtonType.Borderless}
-          title="Report event"
-          className="text-amber-500 hover:text-amber-400"
-        >
-          <FlagIcon height={24} />
-        </Button>
-      )}
+      {!isMod && <EventReportButton eventId={eventId} />}
 
       {isMod && (
-        <Button
-          type={ButtonType.Borderless}
+        <Link
+          href={`/mod/events/${eventName}`}
           title="Moderate this event"
           className="text-pink-500 hover:text-pink-400"
         >
           <ShieldCheckIcon height={24} />
-        </Button>
+        </Link>
       )}
 
       {isEditor && <Separator width={2} height={24} />}

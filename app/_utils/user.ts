@@ -1,11 +1,13 @@
 export function isSuperuser(
   user: Readonly<{ role: string }> | null | undefined,
 ) {
-  return user && user.role !== "USER";
+  return !!user && user.role !== "USER";
 }
 
-export function isUserActive(user: Readonly<{ status: string }> | null) {
-  return user && user.status === "ACTIVE";
+export function isUserActive(
+  user: Readonly<{ status: string }> | null | undefined,
+) {
+  return !!user && user.status === "ACTIVE";
 }
 
 export function isEditor(

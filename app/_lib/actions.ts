@@ -28,6 +28,11 @@ import {
   deleteSchedule,
 } from "@/app/_lib/data/schedule-service";
 import { getUsersByName } from "@/app/_lib/data/user-service";
+import {
+  reportFormSchema,
+  ReportFormSchema,
+} from "@/app/_utils/form-schemas/report-schema";
+import { createReport } from "@/app/_lib/data/report-service";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -134,4 +139,10 @@ export async function getEditorUsers(name: string) {
     name: x.name,
     image: x.image,
   }));
+}
+
+export async function sendReport(data: ReportFormSchema, eventId: string) {
+  const { message } = reportFormSchema.parse(data);
+
+  return await createReport({ message, eventId });
 }

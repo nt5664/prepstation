@@ -156,6 +156,6 @@ model Report {
     reported Event @relation(fields: [reportedId], references: [id])
     reportedId String
     handled Boolean @default(false)
-    handledBy User @relation(fields: [handlerId], references: [id], name: "reportsHandled")
-    handlerId String
+    handledBy User? @relation(fields: [handlerId], references: [id], name: "reportsHandled")
+    handlerId String?
 }

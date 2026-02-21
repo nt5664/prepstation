@@ -2,7 +2,7 @@
 
 import { Cog6ToothIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
-import PopupBox from "@/app/_components/PopupBox";
+import Modal from "@/app/_components/Modal";
 import ComboBox from "@/app/_components/primitives/ComboBox";
 import { SemaphoreStyle, TimeFormat } from "@/app/_types/Prefs";
 import {
@@ -31,12 +31,12 @@ export default function PreferenceEditor() {
   }
 
   return (
-    <PopupBox>
-      <PopupBox.Toggle className="hover:text-teal-300" title="Set preferences">
+    <Modal>
+      <Modal.Toggle className="hover:text-teal-300" title="Set preferences">
         <Cog6ToothIcon height={16} />
-      </PopupBox.Toggle>
+      </Modal.Toggle>
 
-      <PopupBox.Panel>
+      <Modal.Window title="Set preferences">
         <div className="flex flex-col p-1 text-sm">
           <PreferenceRow name="Time format">
             <ComboBox<TimeFormat>
@@ -63,8 +63,8 @@ export default function PreferenceEditor() {
             />
           </PreferenceRow>
         </div>
-      </PopupBox.Panel>
-    </PopupBox>
+      </Modal.Window>
+    </Modal>
   );
 }
 
