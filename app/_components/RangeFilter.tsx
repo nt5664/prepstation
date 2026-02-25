@@ -45,6 +45,7 @@ export default function RangeFilter({
       {header && <div>{header}</div>}
       <div className="flex border-2 gap-1 px-1 py-0.5 rounded-md border-sky-600">
         <input
+          id={`${filterKey}-start`}
           className="outline-0 border-2 rounded-md border-cyan-700"
           type="date"
           value={values[0] ?? undefined}
@@ -52,13 +53,14 @@ export default function RangeFilter({
         />
         <div>-</div>
         <input
+          id={`${filterKey}-end`}
           className="outline-0 border-2 rounded-md border-cyan-700"
           type="date"
           value={values[1] ?? undefined}
           onChange={(e) => handleChange(1, e.target.value)}
         />
 
-        <div className="flex">
+        <div className="flex gap-px">
           <Button
             className="bg-amber-500 border-amber-700 text-amber-700 hover:bg-amber-400 hover:border-amber-600 active:bg-amber-600 active:border-amber-800"
             type={ButtonType.Primary}

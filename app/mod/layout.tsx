@@ -22,8 +22,8 @@ export default async function ModLayout({
     <div className="grid grid-rows-[auto_auto]">
       <TabNavbar
         tabs={MOD_TABS}
-        tabsClassname="border-2 rounded-md border-transparent hover:text-teal-300 hover:border-teal-300"
-        activeClassname="bg-teal-600 font-bold"
+        tabsClassname="border-2 rounded-md border-transparent hover:text-cyan-300 hover:border-cyan-300"
+        activeClassname="bg-cyan-600 font-bold"
       />
 
       {children}

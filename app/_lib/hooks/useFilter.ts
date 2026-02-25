@@ -26,7 +26,7 @@ export function useFilter({
       if (val) params.set(filterKey, val);
       else params.delete(filterKey);
 
-      if (resetPagination) params.set(PAGINATION_KEY, "1");
+      if (resetPagination) params.delete(PAGINATION_KEY);
 
       const paramsString = params.toString();
       router.replace(`${pathname}?${paramsString}`);

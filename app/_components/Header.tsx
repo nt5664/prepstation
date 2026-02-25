@@ -3,7 +3,7 @@ import Logo from "./Logo";
 
 export default function Header() {
   return (
-    <header className="border-b-2 border-b-slate-600 bg-linear-to-b from-teal-600 to-teal-800 h-12 text-teal-50">
+    <header className="border-b-2 border-b-slate-600 bg-linear-to-b from-teal-600 to-cyan-800 h-12 text-teal-50">
       <div className="flex justify-between items-center mx-2 h-full">
         <div className="flex content-center">
           <Logo />
