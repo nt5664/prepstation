@@ -12,7 +12,7 @@
   }
 
   .loader {
-    border: 16px solid oklch(28.279% 0.14148 290.542 / 0.249);
+    border: 16px solid transparent;
     border-top: 16px solid oklch(59.6% 0.145 163.225);
     border-bottom: 16px solid oklch(59.6% 0.145 163.225);
     border-radius: 50%;
@@ -23,7 +23,7 @@
   }
 
   .loader-medium {
-    border: 8px solid oklch(28.279% 0.14148 290.542 / 0.249);
+    border: 8px solid transparent;
     border-top: 8px solid oklch(59.6% 0.145 163.225);
     border-bottom: 8px solid oklch(59.6% 0.145 163.225);
     border-radius: 50%;

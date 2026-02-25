@@ -3,6 +3,9 @@ import { ActivityTarget } from "@/app/_data";
 import { EventActivityPayload } from "@/app/_types/EventActivityPayload";
 import { ScheduleActivityPayload } from "@/app/_types/ScheduleActivityPayload";
 import { UserActivityPayload } from "@/app/_types/UserActivityPayload";
+import { QueryRange } from "@/app/_types/QueryRange";
+import { getServerSession } from "@/app/_lib/auth";
+import { isSuperuser } from "@/app/_utils/user";
 
 type AcceptedPayloads =
   | EventActivityPayload
@@ -37,6 +40,24 @@ async function doLog<T extends AcceptedPayloads>(
       affects: target,
       affectedId,
       payload,
+    },
+  });
+}
+
+export async function getActivities({
+  target,
+  range,
+}: {
+  target: ActivityTarget | "all";
+  range?: QueryRange;
+}) {
+  const session = await getServerSession();
+  if (!session || !isSuperuser(session.user)) throw new Error("Forbidden");
+
+  return await prisma.activityHistory.findMany({
+    where: {
+      affects: target !== "all" ? target : undefined,
+      createdAt: range ? { gte: range.from, lte: range.to } : undefined,
     },
   });
 }

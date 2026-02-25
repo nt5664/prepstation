@@ -1,7 +1,7 @@
 import {
   FolderPlusIcon,
   PencilSquareIcon,
-  ShieldCheckIcon,
+  ShieldExclamationIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -33,7 +33,7 @@ export default async function EventActions({
           title="Moderate this event"
           className="text-pink-500 hover:text-pink-400"
         >
-          <ShieldCheckIcon height={24} />
+          <ShieldExclamationIcon height={24} />
         </Link>
       )}
 

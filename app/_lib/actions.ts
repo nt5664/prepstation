@@ -32,7 +32,12 @@ import {
   reportFormSchema,
   ReportFormSchema,
 } from "@/app/_utils/form-schemas/report-schema";
-import { createReport } from "@/app/_lib/data/report-service";
+import {
+  createReport,
+  getReports,
+  markReportAsHandled,
+} from "@/app/_lib/data/report-service";
+import { QueryRange } from "@/app/_types/QueryRange";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -145,4 +150,8 @@ export async function sendReport(data: ReportFormSchema, eventId: string) {
   const { message } = reportFormSchema.parse(data);
 
   return await createReport({ message, eventId });
+}
+
+export async function handleReport(id: string) {
+  return await markReportAsHandled(id);
 }
