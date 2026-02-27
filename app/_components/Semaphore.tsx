@@ -1,12 +1,14 @@
+"use client";
+
 import { addDays, isWithinInterval } from "date-fns";
-import { getPrefSemaphoreStyle } from "@/app/_lib/pref";
+import { getPreferredSemaphoreStyle } from "@/app/_lib/pref-client";
 import { SemaphoreStyle } from "@/app/_types/Prefs";
 
-export default async function Semaphore({
+export default function Semaphore({
   startDate,
   endDate,
 }: Readonly<{ startDate: Date; endDate: Date }>) {
-  const style = await getPrefSemaphoreStyle();
+  const style = getPreferredSemaphoreStyle();
   return (
     <div className="flex mr-8 gap-2 items-center">
       <div

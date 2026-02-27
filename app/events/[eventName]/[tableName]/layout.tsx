@@ -19,7 +19,7 @@ export default async function ScheduleLayout({
   else
     return (
       <div className="grid grid-cols-1 grid-rows-[auto_1fr] text-cyan-50">
-        <div className="flex justify-between my-4 p-2 border-2 rounded-md grid-cols-2 w-4/5 mx-auto border-cyan-800 bg-gray-700">
+        <div className="grid grid-cols-[1fr_auto] my-4 p-2 border-2 rounded-md w-4/5 mx-auto border-cyan-800 bg-gray-700">
           <div>
             <div className="flex gap-2">
               <h2 className="text-3xl italic tracking-wider">
@@ -33,13 +33,11 @@ export default async function ScheduleLayout({
                 />
               )}
             </div>
-            <div className="w-9/10 mx-auto">
-              <h3 className="text-2xl font-semibold tracking-wide text-teal-600 hover:text-teal-500 active:text-teal-700">
-                <Link href={`/events/${eventName}`}>{event.title}</Link>
-              </h3>
-            </div>
+            <h3 className="ml-8 text-2xl font-semibold tracking-wide text-teal-600 hover:text-teal-500 active:text-teal-700">
+              <Link href={`/events/${eventName}`}>{event.title}</Link>
+            </h3>
           </div>
-          <div className="flex flex-col cols-2 gap-1 row-span-full justify-center text-center">
+          <div className="flex flex-col col-2 gap-1 row-span-full justify-center text-center">
             {event.schedules[0].channel && (
               <Link
                 target="_blank"
