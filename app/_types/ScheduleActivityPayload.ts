@@ -27,4 +27,5 @@ export type ScheduleActivityPayload =
         extraData: ExtraValue[] | JsonValue;
       }[];
     }
+  | { action: "entriesReordered"; data: { id: string; order: number }[] }
   | { action: "entriesDeleted"; data: { count: number; ids: string[] } };

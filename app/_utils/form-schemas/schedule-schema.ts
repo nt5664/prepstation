@@ -7,6 +7,7 @@ const extraValueSchema = z.object({
 
 const matchSchema = z.object({
   id: z.uuid().nullable(),
+  order: z.number().min(0, "Order must be a nonnegative value"),
   name: z
     .string()
     .min(1, "The name is required.")

@@ -1,13 +1,10 @@
-import clsx from "clsx";
-import { addMinutes, isWithinInterval } from "date-fns";
 import { notFound } from "next/navigation";
-import DisplayGrid from "@/app/_components/DisplayGrid";
-import { getTableDisplayEntries } from "@/app/_lib/data/table-service";
+import {
+  getTableDisplayEntries,
+  getTableSummary,
+} from "@/app/_lib/data/table-service";
 import { getEndDate } from "@/app/_utils/time";
-import { getTimeFormatString } from "@/app/_utils/prefs";
-import { getPrefTimeFormat } from "@/app/_lib/pref";
 import { getEventWithTables } from "@/app/_lib/data/event-service";
-import ScheduleRow from "@/app/_components/ScheduleRow";
 import TableTimes from "@/app/_components/TableTimes";
 import ScheduleList from "@/app/_components/ScheduleList";
 
@@ -16,7 +13,7 @@ export async function generateMetadata({
 }: Readonly<{ params: Promise<{ eventName: string; tableName: string }> }>) {
   const { eventName, tableName } = await params;
   const [table, event] = await Promise.all([
-    getTableDisplayEntries(tableName, eventName),
+    getTableSummary(tableName, eventName),
     getEventWithTables(eventName),
   ]);
 

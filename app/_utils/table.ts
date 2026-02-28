@@ -11,3 +11,16 @@ export function syncExtraData<T>(
     return mapFn(x, value, i);
   });
 }
+
+export function sortTableEntries<
+  const T extends { order: number | null; createdAt: Date },
+>(entries: T[]) {
+  return entries.sort((a, b) => {
+    const valA = a.order ?? Infinity;
+    const valB = b.order ?? Infinity;
+
+    return valA !== valB
+      ? valA - valB
+      : a.createdAt.valueOf() - b.createdAt.valueOf();
+  });
+}

@@ -7,6 +7,8 @@ import { isSuperuser } from "@/app/_utils/user";
 import TableCard from "@/app/_components/TableCard";
 import { getEarliestDate } from "@/app/_utils/time";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: Readonly<{ params: Promise<{ eventName: string }> }>) {

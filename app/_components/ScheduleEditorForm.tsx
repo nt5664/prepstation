@@ -9,7 +9,7 @@ import {
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { addMinutes, format } from "date-fns";
+import { addMinutes } from "date-fns";
 import toast from "react-hot-toast";
 import { ExtraColumnDefinition } from "@/app/_types/ExtraColumnDefinition";
 import {
@@ -23,7 +23,11 @@ import Button, {
   ButtonType,
 } from "@/app/_components/primitives/Button";
 import FormSubmitButton from "@/app/_components/forms/FormSubmitButton";
-import { deleteScheduleEntry, saveSchedule } from "@/app/_lib/actions";
+import {
+  deleteScheduleEntry,
+  saveSchedule,
+  updateScheduleOrder,
+} from "@/app/_lib/actions";
 import { syncExtraData } from "@/app/_utils/table";
 import { useLocalTimeString } from "@/app/_lib/hooks/useLocalTimeString";
 
@@ -39,6 +43,7 @@ export default function ScheduleEditorForm({
     extraColumns: ExtraColumnDefinition[];
     entries: {
       id: string;
+      order: number | null;
       name: string;
       estimate: number;
       extraData: ExtraValue[];
@@ -53,8 +58,9 @@ export default function ScheduleEditorForm({
     reValidateMode: "onBlur",
     defaultValues: {
       matches:
-        entries?.map((x) => ({
+        entries?.map((x, i) => ({
           ...x,
+          order: x.order ?? i,
           extraData: syncExtraData(extraColumns, x.extraData, (col, value) => ({
             name: col.name,
             value,
@@ -67,6 +73,8 @@ export default function ScheduleEditorForm({
   const {
     control,
     handleSubmit,
+    getValues,
+    setValue,
     formState: { isValid },
   } = formMethods;
   const watch = useWatch({ control, name: "matches" });
@@ -127,6 +135,31 @@ export default function ScheduleEditorForm({
                     }
 
                     remove(i);
+
+                    const matches = getValues("matches");
+                    const ids = matches
+                      .slice(i)
+                      .map((x) => x.id)
+                      .filter((x) => x !== null);
+
+                    if (ids.length) {
+                      const updatedEntries = await updateScheduleOrder({
+                        ids,
+                        firstIdx: i,
+                        eventId,
+                        tableId,
+                      });
+
+                      if (updatedEntries?.length)
+                        updatedEntries.forEach((x, j) =>
+                          setValue(`matches.${i + j}.order`, x.order!, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          }),
+                        );
+                      else toast.error("Reordering entries failed");
+                    }
+
                     toast.success("Row has been removed successfully.");
                   }}
                 />
@@ -143,6 +176,7 @@ export default function ScheduleEditorForm({
                   onClick={() =>
                     append({
                       id: null,
+                      order: fields.length,
                       name: "",
                       estimate: 10,
                       extraData: extraColumns.map((x) => ({

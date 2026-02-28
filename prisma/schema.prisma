@@ -129,6 +129,7 @@ model TimetableEntry {
     id String @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    order Int?
     estimate Int
     name String @db.VarChar(50)
     extraData Json

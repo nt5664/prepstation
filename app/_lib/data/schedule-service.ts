@@ -11,6 +11,7 @@ export async function submitSchedule(
     id?: string | null;
     estimate: number;
     name: string;
+    order: number;
     extraData: { name: string; value: string }[];
   }[],
   { eventId, tableId }: { eventId: string; tableId: string },
@@ -42,6 +43,7 @@ export async function submitSchedule(
                 data: {
                   estimate: x.estimate,
                   name: x.name,
+                  order: x.order,
                   extraData: x.extraData,
                 },
               })
@@ -49,6 +51,7 @@ export async function submitSchedule(
                 data: {
                   estimate: x.estimate,
                   name: x.name,
+                  order: x.order,
                   extraData: x.extraData,
                   timetableId: tableId,
                 },
@@ -68,6 +71,7 @@ export async function submitSchedule(
             id: x.id,
             created: x.createdAt,
             name: x.name,
+            order: x.order,
             estimate: x.estimate,
             extraData: x.extraData,
           })),
@@ -76,6 +80,57 @@ export async function submitSchedule(
   );
 
   return retVal;
+}
+
+export async function updateEntryOrders(
+  entryIds: string[],
+  firstNum: number,
+  eventId: string,
+  tableId: string,
+) {
+  if (!entryIds.length) return null;
+
+  const [session, event, stub] = await Promise.all([
+    getServerSession(),
+    getEditorsById(eventId),
+    getTableStub(tableId),
+  ]);
+
+  if (
+    !session ||
+    !event ||
+    !stub ||
+    !isUserAuthorized(session!.user, event!.editors)
+  )
+    throw new Error("Forbidden");
+
+  const transaction = await prisma.$transaction(
+    async (ctx) =>
+      await Promise.all(
+        entryIds.map(
+          async (x, offset) =>
+            await ctx.timetableEntry.update({
+              where: { id: x, timetableId: tableId },
+              data: { order: firstNum + offset },
+              select: { id: true, order: true },
+            }),
+        ),
+      ),
+  );
+
+  after(
+    async () =>
+      await logSchedule({
+        instigatorId: session!.user.id,
+        affectedId: tableId,
+        payload: {
+          action: "entriesReordered",
+          data: transaction.map((x) => ({ id: x.id, order: x.order! })),
+        },
+      }),
+  );
+
+  return transaction;
 }
 
 export async function deleteSchedule(

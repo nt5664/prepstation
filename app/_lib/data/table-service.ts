@@ -10,6 +10,7 @@ import {
   normalizeExtraValues,
 } from "@/app/_utils/data-serialization";
 import { logSchedule } from "@/app/_lib/data/activity-service";
+import { sortTableEntries } from "@/app/_utils/table";
 
 export async function createTable(
   tableData: {
@@ -108,7 +109,14 @@ export async function getTableEntries(stub: string, eventId: string) {
       transitionTime: true,
       extraColumns: true,
       entries: {
-        select: { id: true, name: true, estimate: true, extraData: true },
+        select: {
+          id: true,
+          createdAt: true,
+          name: true,
+          order: true,
+          estimate: true,
+          extraData: true,
+        },
       },
     },
   });
@@ -117,10 +125,12 @@ export async function getTableEntries(stub: string, eventId: string) {
     ? {
         ...table,
         extraColumns: normalizeExtraColumns(table.extraColumns),
-        entries: table.entries.map((x) => ({
-          ...x,
-          extraData: normalizeExtraValues(x.extraData),
-        })),
+        entries: sortTableEntries(
+          table.entries.map((x) => ({
+            ...x,
+            extraData: normalizeExtraValues(x.extraData),
+          })),
+        ),
       }
     : null;
 }
@@ -138,7 +148,13 @@ export async function getTableDisplayEntries(stub: string, eventName: string) {
       transitionTime: true,
       extraColumns: true,
       entries: {
-        select: { name: true, estimate: true, extraData: true },
+        select: {
+          createdAt: true,
+          name: true,
+          order: true,
+          estimate: true,
+          extraData: true,
+        },
       },
     },
   });
@@ -147,10 +163,12 @@ export async function getTableDisplayEntries(stub: string, eventName: string) {
     ? {
         ...table,
         extraColumns: normalizeExtraColumns(table.extraColumns),
-        entries: table.entries.map((x) => ({
-          ...x,
-          extraData: normalizeExtraValues(x.extraData),
-        })),
+        entries: sortTableEntries(
+          table.entries.map((x) => ({
+            ...x,
+            extraData: normalizeExtraValues(x.extraData),
+          })),
+        ),
       }
     : null;
 }

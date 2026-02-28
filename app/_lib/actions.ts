@@ -26,8 +26,12 @@ import {
 import {
   submitSchedule,
   deleteSchedule,
+  updateEntryOrders,
 } from "@/app/_lib/data/schedule-service";
-import { getUsersByName } from "@/app/_lib/data/user-service";
+import {
+  getUsersByName,
+  getUsersBySearchString,
+} from "@/app/_lib/data/user-service";
 import {
   reportFormSchema,
   ReportFormSchema,
@@ -128,6 +132,20 @@ export async function saveSchedule(
   revalidatePath(`/editor/${names.eventName}/${names.tableStub}`);
   revalidatePath(`/events/${names.eventName}/${names.tableStub}`);
   return names;
+}
+
+export async function updateScheduleOrder({
+  ids,
+  firstIdx,
+  eventId,
+  tableId,
+}: {
+  ids: string[];
+  firstIdx: number;
+  eventId: string;
+  tableId: string;
+}) {
+  return await updateEntryOrders(ids, firstIdx, eventId, tableId);
 }
 
 export async function deleteScheduleEntry(
