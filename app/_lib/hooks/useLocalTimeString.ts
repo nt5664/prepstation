@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { getTimeFormatString } from "@/app/_utils/prefs";
 import { getPreferredTimeFormat } from "@/app/_lib/pref-client";

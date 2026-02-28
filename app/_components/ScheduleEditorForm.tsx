@@ -25,6 +25,7 @@ import Button, {
 import FormSubmitButton from "@/app/_components/forms/FormSubmitButton";
 import { deleteScheduleEntry, saveSchedule } from "@/app/_lib/actions";
 import { syncExtraData } from "@/app/_utils/table";
+import { useLocalTimeString } from "@/app/_lib/hooks/useLocalTimeString";
 
 export default function ScheduleEditorForm({
   table: { id: tableId, startDate, transitionTime, extraColumns, entries },
@@ -75,6 +76,15 @@ export default function ScheduleEditorForm({
     keyName: "rhfKey",
   });
 
+  const localStartDate = useLocalTimeString(startDate);
+  const localEndDate = useLocalTimeString(
+    addMinutes(
+      startDate,
+      watch.reduce((acc, curr) => acc + curr.estimate, 0) +
+        (fields.length > 1 ? (fields.length - 1) * transitionTime : 0),
+    ),
+  );
+
   function onSubmit(data: ScheduleFormSchema) {
     toast.promise(saveSchedule(data, eventId, tableId), {
       loading: "Submitting...",
@@ -94,23 +104,8 @@ export default function ScheduleEditorForm({
     <FormProvider {...formMethods}>
       <div className={className}>
         <p className="text-center">
-          Starting{" "}
-          <span className="italic">
-            {format(startDate, "dd MMMM yyyy HH:mm")}
-          </span>{" "}
-          and ends{" "}
-          <span className="italic">
-            {format(
-              addMinutes(
-                startDate,
-                watch.reduce((acc, curr) => acc + curr.estimate, 0) +
-                  (fields.length > 1
-                    ? (fields.length - 1) * transitionTime
-                    : 0),
-              ),
-              "dd MMMM yyyy HH:mm",
-            )}
-          </span>
+          Starting <span className="italic">{localStartDate}</span> and ends{" "}
+          <span className="italic">{localEndDate}</span>
         </p>
         <div className="my-6 border-2 rounded-md border-cyan-800 bg-slate-800">
           <form className="m-4" noValidate onSubmit={handleSubmit(onSubmit)}>
