@@ -3,7 +3,7 @@ import { getReports } from "@/app/_lib/data/report-service";
 import { getPrefTimeFormat } from "@/app/_lib/pref";
 import { getTimeFormatString } from "@/app/_utils/prefs";
 import DisplayGrid from "@/app/_components/DisplayGrid";
-import ReportRow from "@/app/_components/ReportRow";
+import ReportRow from "@/app/_components/moderation/ReportRow";
 import PageNavigation from "@/app/_components/PageNavigation";
 import { REPORT_PAGE_SIZE } from "@/app/_utils/constants";
 

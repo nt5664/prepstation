@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import LoaderMedium from "@/app/_components/LoaderMedium";
-import ReportBrowser from "@/app/_components/ReportBrowser";
+import ReportBrowser from "@/app/_components/moderation/ReportBrowser";
 import { parseBool } from "@/app/_utils/bool";
 import Filter from "@/app/_components/Filter";
 import { REPORT_PAGE_SIZE } from "@/app/_utils/constants";

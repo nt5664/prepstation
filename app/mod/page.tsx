@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import ModDashboard from "@/app/_components/ModDashboard";
+import ModDashboard from "@/app/_components/moderation/ModDashboard";
 import LoaderMedium from "@/app/_components/LoaderMedium";
 
 export const metadata = {
