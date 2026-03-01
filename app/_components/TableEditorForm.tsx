@@ -5,7 +5,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-
 import {
   tableFormFields,
   tableFormSchema,
@@ -22,6 +21,7 @@ import Button, {
   ButtonType,
 } from "@/app/_components/primitives/Button";
 import { saveTable } from "@/app/_lib/actions";
+import clsx from "clsx";
 
 export default function TableEditorForm({
   eventName,
@@ -46,7 +46,7 @@ export default function TableEditorForm({
     register,
     handleSubmit,
     control,
-    formState: { isValid, errors },
+    formState: { isValid, isSubmitting, errors },
   } = useForm<TableFormSchema>({
     mode: "onBlur",
     reValidateMode: "onBlur",
@@ -66,11 +66,16 @@ export default function TableEditorForm({
     resolver: zodResolver(tableFormSchema),
   });
 
-  function onSubmit(data: TableFormSchema) {
+  function onSubmit(
+    data: TableFormSchema,
+    skipScheduleEditor: boolean = false,
+  ) {
     toast.promise(saveTable(data, eventName, tableToEdit?.id), {
       loading: "Submitting...",
       success: (savedId) => {
-        router.push(`/editor/${eventName}/${savedId}`);
+        router.push(
+          `/${skipScheduleEditor ? "events" : "editor"}/${eventName}/${savedId}`,
+        );
         return `Table has been ${
           isEditing ? "updated" : "created"
         } successfully`;
@@ -85,7 +90,11 @@ export default function TableEditorForm({
   }
 
   return (
-    <form className="m-4" noValidate onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="m-4"
+      noValidate
+      onSubmit={handleSubmit((formData) => onSubmit(formData))}
+    >
       <FormRow
         id={tableFormFields.tableStub.id}
         label="Table stub"
@@ -238,16 +247,36 @@ export default function TableEditorForm({
           }}
         />
       </FormRow>
-      <FormSubmitButton disabled={!isValid}>
-        {isEditing ? "Save changes" : "Create"}
-      </FormSubmitButton>
-      <Button
-        type={ButtonType.Secondary}
-        mode={ButtonMode.Reset}
-        onClick={handleBack}
-      >
-        Go back
-      </Button>
+      <div className="grid grid-cols-3 grid-rows-[auto_auto_auto] gap-2">
+        <FormSubmitButton
+          className={clsx(
+            "row-1 col-span-2",
+            isEditing ? "w-full" : "w-fit px-4",
+          )}
+          disabled={!isValid || isSubmitting}
+        >
+          {isEditing ? "Save changes and edit schedule" : "Create"}
+        </FormSubmitButton>
+        {isEditing && (
+          <Button
+            className="row-2 col-span-2 w-full"
+            type={ButtonType.Primary}
+            mode={ButtonMode.Button}
+            disabled={!isValid || isSubmitting}
+            onClick={handleSubmit((formData) => onSubmit(formData, true))}
+          >
+            Save changes and keep schedule
+          </Button>
+        )}
+        <Button
+          className={clsx("w-fit", isEditing ? "row-3" : "row-2")}
+          type={ButtonType.Secondary}
+          mode={ButtonMode.Reset}
+          onClick={handleBack}
+        >
+          Go back
+        </Button>
+      </div>
     </form>
   );
 }
