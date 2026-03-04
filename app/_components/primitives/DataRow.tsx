@@ -12,7 +12,9 @@ export default function DataRow({
 }>) {
   return (
     <div
-      className={twMerge(clsx("flex justify-between text-gray-100", className))}
+      className={twMerge(
+        clsx("flex justify-between gap-2 text-gray-100", className),
+      )}
     >
       <div className="font-semibold text-lg">{name}</div>
       <div className="italic">{value ?? "<NULL>"}</div>

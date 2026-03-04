@@ -1,5 +1,6 @@
 "use client";
 
+import { PAGINATION_KEY } from "@/app/_utils/constants";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -7,8 +8,14 @@ import { useSearchParams } from "next/navigation";
 export default function BackButton({
   href,
   restoreParams = false,
-}: Readonly<{ href: string; restoreParams?: boolean }>) {
-  const searchParams = useSearchParams();
+  ignoreParams = [],
+}: Readonly<{
+  href: string;
+  restoreParams?: boolean;
+  ignoreParams?: string[];
+}>) {
+  const searchParams = new URLSearchParams(useSearchParams());
+  ignoreParams?.forEach((x) => searchParams.delete(x));
 
   return (
     <Link

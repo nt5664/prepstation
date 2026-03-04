@@ -1,11 +1,11 @@
 import { Suspense } from "react";
+import { format, parse } from "date-fns";
 import LoaderMedium from "@/app/_components/LoaderMedium";
 import ReportBrowser from "@/app/_components/moderation/ReportBrowser";
 import { parseBool } from "@/app/_utils/bool";
 import Filter from "@/app/_components/Filter";
 import { REPORT_PAGE_SIZE } from "@/app/_utils/constants";
 import RangeFilter from "@/app/_components/RangeFilter";
-import { format, formatDate, parse } from "date-fns";
 
 const HANDLED_VALUES = [
   { display: "No", value: "false" },

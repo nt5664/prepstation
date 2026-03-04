@@ -5,7 +5,9 @@ import { ScheduleActivityPayload } from "@/app/_types/ScheduleActivityPayload";
 import { UserActivityPayload } from "@/app/_types/UserActivityPayload";
 import { QueryRange } from "@/app/_types/QueryRange";
 import { getServerSession } from "@/app/_lib/auth";
-import { isSuperuser } from "@/app/_utils/user";
+import { isSuperuser, isUserActive } from "@/app/_utils/user";
+import { PaginationRange } from "@/app/_types/PaginationRange";
+import { UnitedPayload } from "@/app/_types/ActivityData";
 
 type AcceptedPayloads =
   | EventActivityPayload
@@ -52,7 +54,7 @@ export async function getActivities({
   range?: QueryRange;
 }) {
   const session = await getServerSession();
-  if (!session || !isSuperuser(session.user)) throw new Error("Forbidden");
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
 
   return await prisma.activityHistory.findMany({
     where: {
@@ -60,4 +62,28 @@ export async function getActivities({
       createdAt: range ? { gte: range.from, lte: range.to } : undefined,
     },
   });
+}
+
+export async function getActivitiesOfUser(
+  userId: string,
+  { page, size }: PaginationRange,
+) {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  const activities = await prisma.activityHistory.findMany({
+    where: { instigatorId: userId },
+    select: {
+      id: true,
+      createdAt: true,
+      affects: true,
+      affectedId: true,
+      payload: true,
+    },
+    orderBy: { createdAt: "desc" },
+    skip: (page - 1) * size,
+    take: size + 1,
+  });
+
+  return activities.map((x) => ({ ...x, payload: x.payload as UnitedPayload }));
 }

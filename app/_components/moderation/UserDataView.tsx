@@ -2,13 +2,12 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { TZDate } from "@date-fns/tz";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { JsonValue } from "@/app/_data/runtime/client";
 import WarningBox from "@/app/_components/primitives/WarningBox";
 import DataRow from "@/app/_components/primitives/DataRow";
 import { getTimeFormatString } from "@/app/_utils/prefs";
 import { getPrefTimeFormat } from "@/app/_lib/pref";
 import DisplayGrid from "@/app/_components/DisplayGrid";
-import Button from "@/app/_components/primitives/Button";
+import UserActivityView from "@/app/_components/moderation/UserActivityView";
 
 export default async function UserDataView({
   user: {
@@ -20,7 +19,7 @@ export default async function UserDataView({
     editorOf,
     reports,
     reportsHandled,
-    activity,
+    allActivities,
   },
 }: Readonly<{
   user: {
@@ -45,22 +44,13 @@ export default async function UserDataView({
       title: string;
       name: string;
     }[];
-    activity: {
-      createdAt: Date;
-      affects: string;
-      affectedId: string | null;
-      payload: JsonValue;
-    }[];
     reportsHandled: {
-      id: string;
       createdAt: Date;
       message: string;
-      handledAt: Date | null;
-      reporterId: string;
-      reportedId: string;
-      handled: boolean;
-      handlerId: string | null;
+      reporter: { name: string; status: string };
+      reported: { name: string; title: string };
     }[];
+    allActivities: number;
   };
 }>) {
   const timeFormat = getTimeFormatString(await getPrefTimeFormat());
@@ -88,36 +78,15 @@ export default async function UserDataView({
             <DataRow name="Status" value={status} />
             <DataRow name="Role" value={role} />
             <DataRow name="Events created" value={events.length} />
-            <DataRow name="Co-manages" value={editorOf.length} />
+            <DataRow name="Events co-managed" value={editorOf.length} />
             <DataRow name="Reports created" value={reports.length} />
             <DataRow name="Reports handled" value={reportsHandled.length} />
-            <DataRow name="Overall activities made" value={activity.length} />
+            <DataRow name="Overall activities made" value={allActivities} />
           </div>
         </DataGroup>
 
         <DataGroup header="Activities">
-          <DisplayGrid
-            className="max-h-full overflow-auto"
-            columnDefinition="1fr"
-            renderRows={() =>
-              activity.map((x) => (
-                <Button
-                  key={Symbol(x.createdAt.valueOf()).toString()}
-                  className="border-2 rounded-md text-center align-middle border-cyan-600 bg-gray-700"
-                >
-                  <div className="flex justify-between">
-                    <div>
-                      {format(
-                        new TZDate(x.createdAt),
-                        "dd MMM yyyy HH:mm:ss '(UTC)'",
-                      )}
-                    </div>
-                    <div>{x.affects}</div>
-                  </div>
-                </Button>
-              ))
-            }
-          />
+          <UserActivityView />
         </DataGroup>
 
         <DataGroup header="Created events">

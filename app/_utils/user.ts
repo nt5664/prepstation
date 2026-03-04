@@ -1,7 +1,7 @@
 export function isSuperuser(
-  user: Readonly<{ role: string }> | null | undefined,
+  user: Readonly<{ role: string; status: string }> | null | undefined,
 ) {
-  return !!user && user.role !== "USER";
+  return isUserActive(user) && user!.role !== "USER";
 }
 
 export function isUserActive(

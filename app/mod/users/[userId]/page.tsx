@@ -2,10 +2,13 @@ import Image from "next/image";
 import UserDataView from "@/app/_components/moderation/UserDataView";
 import BackButton from "@/app/_components/primitives/BackButton";
 import { getUserDataById } from "@/app/_lib/data/user-service";
+import { ACTIVITY_PAGE_KEY } from "@/app/_utils/constants";
 
 export default async function UserDataPage({
   params,
-}: Readonly<{ params: Promise<{ userId: string }> }>) {
+}: Readonly<{
+  params: Promise<{ userId: string }>;
+}>) {
   const { userId } = await params;
   const user = await getUserDataById(userId);
 
@@ -25,7 +28,11 @@ export default async function UserDataPage({
           {user ? user!.name : "User data"}
         </h2>
       </div>
-      <BackButton href="/mod/users" restoreParams />
+      <BackButton
+        href="/mod/users"
+        ignoreParams={[ACTIVITY_PAGE_KEY]}
+        restoreParams
+      />
       <div className="border-2 rounded-lg border-cyan-700 bg-gray-600 text-cyan-100">
         {user ? (
           <UserDataView user={user} />

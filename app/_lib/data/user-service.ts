@@ -25,10 +25,9 @@ export async function getUsersByName(name: string) {
 
 export async function getUserDataById(id: string) {
   const session = await getServerSession();
-  if (!isUserActive(session?.user) || !isSuperuser(session!.user))
-    throw new Error("Forbidden");
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
 
-  return await prisma.user.findUnique({
+  const retUser = await prisma.user.findUnique({
     where: { id },
     select: {
       name: true,
@@ -42,18 +41,6 @@ export async function getUserDataById(id: string) {
         where: { creatorId: { not: id } },
         select: { name: true, title: true },
       },
-      activity: {
-        select: {
-          createdAt: true,
-          affects: true,
-          affectedId: true,
-          payload: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 50,
-      },
       reports: {
         select: {
           createdAt: true,
@@ -62,15 +49,29 @@ export async function getUserDataById(id: string) {
           reported: { select: { name: true, title: true } },
         },
       },
-      reportsHandled: true,
+      reportsHandled: {
+        select: {
+          createdAt: true,
+          message: true,
+          reporter: { select: { name: true, status: true } },
+          reported: { select: { name: true, title: true } },
+        },
+      },
+      activity: false,
+      _count: {
+        select: { activity: true },
+      },
     },
   });
+
+  return retUser === null
+    ? retUser
+    : { ...retUser, allActivities: retUser._count.activity, _count: undefined };
 }
 
 export async function getUsersBySearchString(search: string) {
   const session = await getServerSession();
-  if (!isUserActive(session?.user) || !isSuperuser(session!.user))
-    throw new Error("Forbidden");
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
 
   return await prisma.user.findMany({
     where: { name: { startsWith: search, mode: "insensitive" } },

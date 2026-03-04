@@ -28,20 +28,17 @@ import {
   deleteSchedule,
   updateEntryOrders,
 } from "@/app/_lib/data/schedule-service";
-import {
-  getUsersByName,
-  getUsersBySearchString,
-} from "@/app/_lib/data/user-service";
+import { getUsersByName } from "@/app/_lib/data/user-service";
 import {
   reportFormSchema,
   ReportFormSchema,
 } from "@/app/_utils/form-schemas/report-schema";
 import {
   createReport,
-  getReports,
   markReportAsHandled,
 } from "@/app/_lib/data/report-service";
-import { QueryRange } from "@/app/_types/QueryRange";
+import { getActivitiesOfUser } from "@/app/_lib/data/activity-service";
+import { ACTIVITY_PAGE_SIZE } from "@/app/_utils/constants";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -172,4 +169,8 @@ export async function sendReport(data: ReportFormSchema, eventId: string) {
 
 export async function handleReport(id: string) {
   return await markReportAsHandled(id);
+}
+
+export async function getUserActivities(userId: string, page: number) {
+  return await getActivitiesOfUser(userId, { page, size: ACTIVITY_PAGE_SIZE });
 }

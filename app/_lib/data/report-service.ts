@@ -1,13 +1,12 @@
+import { endOfDay, startOfDay } from "date-fns";
 import { prisma } from "@/app/_lib/prisma";
 import { getServerSession } from "@/app/_lib/auth";
 import { isSuperuser, isUserActive } from "@/app/_utils/user";
 import { ReportFilter } from "@/app/_types/ReportFilter";
-import { endOfDay, startOfDay } from "date-fns";
 
 export async function getReports({ handled, range, pagination }: ReportFilter) {
   const session = await getServerSession();
-  if (!isUserActive(session?.user) || !isSuperuser(session!.user))
-    throw new Error("Forbidden");
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
 
   return await prisma.report.findMany({
     where: {
@@ -62,8 +61,7 @@ export async function createReport({
 
 export async function markReportAsHandled(id: string) {
   const session = await getServerSession();
-  if (!isUserActive(session?.user) || !isSuperuser(session!.user))
-    throw new Error("Forbidden");
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
 
   return await prisma.report.update({
     where: { id, handled: false },
