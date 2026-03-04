@@ -5,7 +5,6 @@ import TabNavbar from "@/app/_components/TabNavbar";
 
 const MOD_TABS = [
   { display: "Overview", href: "/mod" },
-  { display: "Timeframe", href: "/mod/range" },
   { display: "Reports", href: "/mod/reports" },
   { display: "Events", href: "/mod/events" },
   { display: "Users", href: "/mod/users" },

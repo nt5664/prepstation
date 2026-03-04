@@ -34,7 +34,7 @@ export default async function ModDashboard() {
 
   return (
     <div className="grid grid-cols-4 gap-3">
-      <DashboardCard title="Today's activity" href="/mod/range">
+      <DashboardCard title="Today's activity">
         <div className="flex flex-col text-cyan-100">
           <StatRow title="Events" coloring="neutral" value={todayEvents} />
           <StatRow
