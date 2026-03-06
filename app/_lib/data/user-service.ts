@@ -71,6 +71,18 @@ export async function getUserDataById(id: string) {
     : { ...retUser, allActivities: retUser._count.activity, _count: undefined };
 }
 
+export async function getUserCount() {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  const [allUsers, suspendedUsers] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { status: "SUSPENDED" } }),
+  ]);
+
+  return { allUsers, suspendedUsers };
+}
+
 export async function getUsersBySearchString(search: string) {
   const session = await getServerSession();
   if (!isSuperuser(session?.user)) throw new Error("Forbidden");

@@ -3,16 +3,19 @@ import DashboardCard from "@/app/_components/DashboardCard";
 import StatRow from "@/app/_components/StatRow";
 import { getActivities } from "@/app/_lib/data/activity-service";
 import { getReports } from "@/app/_lib/data/report-service";
+import { getUserCount } from "@/app/_lib/data/user-service";
 
 export default async function ModDashboard() {
   const now = new Date();
-  const [todayActivities, unresolvedReports] = await Promise.all([
-    getActivities({
-      target: "all",
-      range: { from: startOfDay(now), to: endOfDay(now) },
-    }),
-    getReports({ handled: false }),
-  ]);
+  const [todayActivities, unresolvedReports, { allUsers, suspendedUsers }] =
+    await Promise.all([
+      getActivities({
+        target: "all",
+        range: { from: startOfDay(now), to: endOfDay(now) },
+      }),
+      getReports({ handled: false }),
+      getUserCount(),
+    ]);
 
   const {
     events: todayEvents,
@@ -31,6 +34,26 @@ export default async function ModDashboard() {
     },
     { events: 0, schedules: 0, users: 0 },
   );
+
+  const { eventChanges, scheduleChanges, entryChanges } = todayActivities
+    .filter((x) => x.affects !== "USER")
+    .reduce(
+      (acc, cur) => {
+        switch (cur.affects) {
+          case "EVENT":
+            return { ...acc, eventChanges: acc.eventChanges + 1 };
+          case "SCHEDULE":
+            return cur.payload.action === "entries" ||
+              cur.payload.action === "entriesDeleted" ||
+              cur.payload.action === "entriesReordered"
+              ? { ...acc, entryChanges: acc.entryChanges + 1 }
+              : { ...acc, scheduleChanges: acc.scheduleChanges + 1 };
+          default:
+            return acc;
+        }
+      },
+      { eventChanges: 0, scheduleChanges: 0, entryChanges: 0 },
+    );
 
   return (
     <div className="grid grid-cols-4 gap-3">
@@ -61,29 +84,25 @@ export default async function ModDashboard() {
           <StatRow
             title="Changes today"
             coloring="neutral"
-            value={unresolvedReports.length}
+            value={eventChanges}
           />
           <StatRow
             title="Schedule changes"
             coloring="neutral"
-            value={unresolvedReports.filter((x) => isToday(x.createdAt)).length}
+            value={scheduleChanges}
           />
           <StatRow
             title="Schedule entries"
             coloring="neutral"
-            value={unresolvedReports.filter((x) => isToday(x.createdAt)).length}
+            value={entryChanges}
           />
         </div>
       </DashboardCard>
 
       <DashboardCard title="Users" href="/mod/users">
         <div className="flex flex-col text-cyan-100">
-          <StatRow title="Suspended" value={unresolvedReports.length} />
-          <StatRow
-            title="All"
-            coloring="neutral"
-            value={unresolvedReports.filter((x) => isToday(x.createdAt)).length}
-          />
+          <StatRow title="Suspended" value={suspendedUsers} />
+          <StatRow title="All" coloring="neutral" value={allUsers} />
         </div>
       </DashboardCard>
     </div>
