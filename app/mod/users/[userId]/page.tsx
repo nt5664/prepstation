@@ -3,6 +3,7 @@ import UserDataView from "@/app/_components/moderation/UserDataView";
 import BackButton from "@/app/_components/primitives/BackButton";
 import { getUserDataById } from "@/app/_lib/data/user-service";
 import { ACTIVITY_PAGE_KEY } from "@/app/_utils/constants";
+import UserActions from "@/app/_components/moderation/UserActions";
 
 export default async function UserDataPage({
   params,
@@ -35,7 +36,10 @@ export default async function UserDataPage({
       />
       <div className="border-2 rounded-lg border-cyan-700 bg-gray-600 text-cyan-100">
         {user ? (
-          <UserDataView user={user} />
+          <div className="flex flex-col gap-1">
+            <UserActions user={{ ...user, id: userId }} />
+            <UserDataView user={user} />
+          </div>
         ) : (
           <div className="my-1 text-center">
             The requested user cannot be found

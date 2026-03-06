@@ -28,7 +28,11 @@ import {
   deleteSchedule,
   updateEntryOrders,
 } from "@/app/_lib/data/schedule-service";
-import { getUsersByName } from "@/app/_lib/data/user-service";
+import {
+  getUsersByName,
+  updateUserRole,
+  updateUserStatus,
+} from "@/app/_lib/data/user-service";
 import {
   reportFormSchema,
   ReportFormSchema,
@@ -39,6 +43,10 @@ import {
 } from "@/app/_lib/data/report-service";
 import { getActivitiesOfUser } from "@/app/_lib/data/activity-service";
 import { ACTIVITY_PAGE_SIZE } from "@/app/_utils/constants";
+import {
+  banFormSchema,
+  BanFormSchema,
+} from "@/app/_utils/form-schemas/ban-schema";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -173,4 +181,18 @@ export async function handleReport(id: string) {
 
 export async function getUserActivities(userId: string, page: number) {
   return await getActivitiesOfUser(userId, { page, size: ACTIVITY_PAGE_SIZE });
+}
+
+export async function changeUserRole(userId: string, promote: boolean) {
+  return await updateUserRole({ id: userId, promote });
+}
+
+export async function banUser(data: BanFormSchema, userId: string) {
+  const { reason } = banFormSchema.parse(data);
+
+  return await updateUserStatus({ id: userId, ban: true, reason });
+}
+
+export async function unbanUser(userId: string) {
+  return await updateUserStatus({ id: userId, ban: false });
 }

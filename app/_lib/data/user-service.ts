@@ -1,6 +1,8 @@
+import { after } from "next/server";
 import { prisma } from "@/app/_lib/prisma";
 import { getServerSession } from "@/app/_lib/auth";
-import { isSuperuser, isUserActive } from "@/app/_utils/user";
+import { isSuperuser } from "@/app/_utils/user";
+import { logUser } from "@/app/_lib/data/activity-service";
 
 export async function createUser(platformId: string, name: string) {
   return await prisma.user.create({
@@ -76,5 +78,52 @@ export async function getUsersBySearchString(search: string) {
   return await prisma.user.findMany({
     where: { name: { startsWith: search, mode: "insensitive" } },
     select: { id: true, name: true, image: true, role: true, status: true },
+  });
+}
+
+export async function updateUserRole({
+  id,
+  promote,
+}: Readonly<{ id: string; promote: boolean }>) {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  return await prisma.user.update({
+    where: { id, role: { not: "ADMIN" } },
+    data: { role: promote ? "MODERATOR" : "USER" },
+    select: { role: true },
+  });
+}
+
+export async function updateUserStatus({
+  id,
+  ban,
+  reason,
+}: Readonly<{ id: string; ban: boolean; reason?: string }>) {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  after(
+    async () =>
+      await logUser({
+        instigatorId: session!.user.id,
+        affectedId: id,
+        payload: ban
+          ? { action: "banned", reason: reason! }
+          : { action: "unbanned" },
+      }),
+  );
+
+  return await prisma.user.update({
+    where: {
+      id,
+      role: { not: "ADMIN" },
+      status: { not: ban ? "SUSPENDED" : "ACTIVE" },
+    },
+    data: {
+      status: ban ? "SUSPENDED" : "ACTIVE",
+      modNote: ban ? reason : null,
+    },
+    select: { status: true },
   });
 }

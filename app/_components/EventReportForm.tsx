@@ -2,17 +2,17 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
 import {
   reportFormFields,
   reportFormSchema,
   ReportFormSchema,
 } from "@/app/_utils/form-schemas/report-schema";
-import toast from "react-hot-toast";
 import { sendReport } from "@/app/_lib/actions";
-import FormRow from "./forms/FormRow";
-import InputLengthCounter from "./forms/InputLengthCounter";
-import Input, { InputType } from "./forms/Input";
-import FormSubmitButton from "./forms/FormSubmitButton";
+import FormRow from "@/app/_components/forms/FormRow";
+import InputLengthCounter from "@/app/_components/forms/InputLengthCounter";
+import Input, { InputType } from "@/app/_components/forms/Input";
+import FormSubmitButton from "@/app/_components/forms/FormSubmitButton";
 
 export default function EventReportForm({
   eventId,
