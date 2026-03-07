@@ -4,10 +4,9 @@ import { TZDate } from "@date-fns/tz";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import WarningBox from "@/app/_components/primitives/WarningBox";
 import DataRow from "@/app/_components/primitives/DataRow";
-import { getTimeFormatString } from "@/app/_utils/prefs";
-import { getPrefTimeFormat } from "@/app/_lib/pref";
 import DisplayGrid from "@/app/_components/DisplayGrid";
 import UserActivityView from "@/app/_components/moderation/UserActivityView";
+import { DataGroup } from "@/app/_components/moderation/DataGroup";
 
 export default async function UserDataView({
   user: {
@@ -53,8 +52,6 @@ export default async function UserDataView({
     allActivities: number;
   };
 }>) {
-  const timeFormat = getTimeFormatString(await getPrefTimeFormat());
-
   return (
     <div className="flex flex-col my-1 gap-2">
       {status !== "ACTIVE" && modNote && (
@@ -72,7 +69,7 @@ export default async function UserDataView({
               name="Profile created"
               value={format(
                 new TZDate(createdAt, "UTC"),
-                `dd MMM yyyy ${timeFormat} '(UTC)'`,
+                `dd MMM yyyy HH:mm:ss '(UTC)'`,
               )}
             />
             <DataRow name="Status" value={status} />
@@ -131,21 +128,6 @@ export default async function UserDataView({
           />
         </DataGroup>
       </div>
-    </div>
-  );
-}
-
-function DataGroup({
-  header,
-  children,
-}: Readonly<{ header: string; children: React.ReactNode }>) {
-  return (
-    <div className="flex flex-col gap-2 h-full p-1 border-2 rounded-md border-cyan-700">
-      <div className="border-2 rounded-md text-xl text-center tracking-widest border-cyan-700 bg-slate-700">
-        {header}
-      </div>
-
-      <div className="min-h-0 flex-1 max-h-full">{children}</div>
     </div>
   );
 }

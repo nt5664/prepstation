@@ -13,6 +13,7 @@ import {
   createEvent,
   updateEvent,
   deleteEvent as deleteEventDb,
+  updateEventVisibility,
 } from "@/app/_lib/data/event-service";
 import {
   createTable,
@@ -47,6 +48,10 @@ import {
   banFormSchema,
   BanFormSchema,
 } from "@/app/_utils/form-schemas/ban-schema";
+import {
+  suspendFormSchema,
+  SuspendFormSchema,
+} from "@/app/_utils/form-schemas/event-suspend-schema";
 
 export async function saveEvent(
   data: EventFormSchema,
@@ -195,4 +200,14 @@ export async function banUser(data: BanFormSchema, userId: string) {
 
 export async function unbanUser(userId: string) {
   return await updateUserStatus({ id: userId, ban: false });
+}
+
+export async function suspendEvent(data: SuspendFormSchema, eventId: string) {
+  const { reason } = suspendFormSchema.parse(data);
+
+  return await updateEventVisibility({ id: eventId, suspend: true, reason });
+}
+
+export async function restoreEvent(eventId: string) {
+  return await updateEventVisibility({ id: eventId, suspend: false });
 }

@@ -144,6 +144,68 @@ export async function getEditorsById(id: string) {
   });
 }
 
+export async function getEventsBySearchString(search: string) {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  const events = await prisma.event.findMany({
+    where: { name: { startsWith: search, mode: "insensitive" } },
+    select: {
+      id: true,
+      name: true,
+      title: true,
+      editors: { select: { name: true } },
+      visibility: true,
+      _count: { select: { schedules: true } },
+    },
+  });
+
+  return events.map((x) => ({
+    ...x,
+    tables: x._count.schedules,
+    _count: undefined,
+  }));
+}
+
+export async function getEventData(id: string) {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  return await prisma.event.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      name: true,
+      title: true,
+      description: true,
+      visibility: true,
+      modNote: true,
+      creator: { select: { id: true, name: true, image: true } },
+      editors: { select: { id: true, name: true, image: true } },
+      schedules: {
+        select: {
+          stub: true,
+          title: true,
+          startDate: true,
+          _count: { select: { entries: true } },
+        },
+      },
+      reports: {
+        select: {
+          id: true,
+          createdAt: true,
+          message: true,
+          reporter: { select: { id: true, name: true } },
+          handled: true,
+          handledBy: { select: { id: true, name: true } },
+        },
+      },
+    },
+  });
+}
+
 export async function updateEvent({
   id,
   name,
@@ -206,6 +268,28 @@ export async function updateEvent({
   );
 
   return updatedEvent;
+}
+
+export async function updateEventVisibility({
+  id,
+  suspend,
+  reason,
+}: {
+  id: string;
+  suspend: boolean;
+  reason?: string;
+}) {
+  const session = await getServerSession();
+  if (!isSuperuser(session?.user)) throw new Error("Forbidden");
+
+  return await prisma.event.update({
+    where: { id, visibility: { not: suspend ? "HIDDEN" : "ACTIVE" } },
+    data: {
+      visibility: suspend ? "HIDDEN" : "ACTIVE",
+      modNote: suspend ? reason : null,
+    },
+    select: { visibility: true },
+  });
 }
 
 export async function deleteEvent(id: string) {

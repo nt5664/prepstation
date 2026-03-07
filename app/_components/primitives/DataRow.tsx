@@ -8,12 +8,15 @@ export default function DataRow({
 }: Readonly<{
   className?: string;
   name: string;
-  value: string | number | null;
+  value: string | number | React.ReactNode | null;
 }>) {
   return (
     <div
       className={twMerge(
-        clsx("flex justify-between gap-2 text-gray-100", className),
+        clsx(
+          "flex justify-between gap-2 text-gray-100 hover:text-cyan-200",
+          className,
+        ),
       )}
     >
       <div className="font-semibold text-lg">{name}</div>

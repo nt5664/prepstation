@@ -5,7 +5,7 @@ import UserRow from "@/app/_components/moderation/UserRow";
 export default async function UserLookupList({
   search,
 }: Readonly<{ search: string | null }>) {
-  if (!search || search.length < 2)
+  if (!search || search.length < 3)
     return <div className="text-center">Enter at least 3 letters</div>;
 
   const [session, foundUsers] = await Promise.all([
