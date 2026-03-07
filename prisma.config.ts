@@ -1,9 +1,9 @@
-//import "dotenv/config";
+import "dotenv/config";
 import { defineConfig } from "prisma/config";
 import { config } from "dotenv";
 import { resolve } from "path";
 
-config({ path: resolve(__dirname, ".env.local") });
+config({ path: resolve(__dirname, ".env") });
 const USER = process.env.POSTGRES_USER;
 const PASS = process.env.POSTGRES_PASSWORD;
 const HOST = process.env.POSTGRES_HOST || "localhost";

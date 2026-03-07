@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import Button, { ButtonType } from "@/app/_components/primitives/Button";
 import SwordIcon from "@/app/_components/primitives/SwordIcon";
+import { Role, UserStatus } from "@/data";
 
 export default function UserRow({
   data: { id, name, image, role, status },
@@ -14,8 +15,8 @@ export default function UserRow({
     id: string;
     name: string;
     image: string | null;
-    role: string;
-    status: string;
+    role: Role;
+    status: UserStatus;
   };
   isSelf: boolean;
 }>) {

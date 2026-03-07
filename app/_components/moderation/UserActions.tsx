@@ -3,10 +3,11 @@ import { getServerSession } from "@/app/_lib/auth";
 import { isSuperuser, isUserActive, isUserAdmin } from "@/app/_utils/user";
 import UserRoleControls from "@/app/_components/moderation/UserRoleControls";
 import UserStatusControls from "@/app/_components/moderation/UserStatusControls";
+import { Role, UserStatus } from "@/data";
 
 export default async function UserActions({
   user,
-}: Readonly<{ user: { id: string; role: string; status: string } }>) {
+}: Readonly<{ user: { id: string; role: Role; status: UserStatus } }>) {
   const session = await getServerSession();
   const isAdmin = isUserAdmin(session?.user);
   const isTargetAdmin = isUserAdmin(user);

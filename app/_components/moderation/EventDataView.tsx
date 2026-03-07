@@ -6,6 +6,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import WarningBox from "@/app/_components/primitives/WarningBox";
 import { DataGroup } from "@/app/_components/moderation/DataGroup";
 import DataRow from "@/app/_components/primitives/DataRow";
+import { EventStatus } from "@/data";
 
 type EventManagerData = { id: string; name: string; image: string | null };
 
@@ -28,7 +29,7 @@ export default async function EventDataView({
     description: string;
     createdAt: Date;
     updatedAt: Date;
-    visibility: string;
+    visibility: EventStatus;
     modNote: string | null;
     creator: EventManagerData;
     editors: EventManagerData[];

@@ -6,11 +6,12 @@ import Modal, { useCloseModalWindow } from "@/app/_components/Modal";
 import Button, { ButtonType } from "@/app/_components/primitives/Button";
 import { restoreEvent } from "@/app/_lib/actions";
 import EventSuspensionForm from "@/app/_components/moderation/EventSuspensionForm";
+import { EventStatus } from "@/data";
 
 export default function EventModActions({
   id,
   visibility,
-}: Readonly<{ id: string; visibility: string }>) {
+}: Readonly<{ id: string; visibility: EventStatus }>) {
   const isActive = visibility === "ACTIVE";
 
   function handleRestore() {

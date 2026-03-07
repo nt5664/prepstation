@@ -7,6 +7,7 @@ import DataRow from "@/app/_components/primitives/DataRow";
 import DisplayGrid from "@/app/_components/DisplayGrid";
 import UserActivityView from "@/app/_components/moderation/UserActivityView";
 import { DataGroup } from "@/app/_components/moderation/DataGroup";
+import { Role, UserStatus } from "@/data";
 
 export default async function UserDataView({
   user: {
@@ -33,8 +34,8 @@ export default async function UserDataView({
         name: string;
       };
     }[];
-    role: string;
-    status: string;
+    role: Role;
+    status: UserStatus;
     events: {
       title: string;
       name: string;

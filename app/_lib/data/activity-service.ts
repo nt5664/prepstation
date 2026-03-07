@@ -1,5 +1,5 @@
 import { prisma } from "@/app/_lib/prisma";
-import { ActivityTarget } from "@/app/_data";
+import { ActivityTarget } from "@/data";
 import { EventActivityPayload } from "@/app/_types/EventActivityPayload";
 import { ScheduleActivityPayload } from "@/app/_types/ScheduleActivityPayload";
 import { UserActivityPayload } from "@/app/_types/UserActivityPayload";
