@@ -29,7 +29,7 @@ export default async function EventActions({
 
       {isMod && (
         <Link
-          href={`/mod/events/${eventName}`}
+          href={`/mod/events/${eventId}`}
           title="Moderate this event"
           className="text-pink-500 hover:text-pink-400"
         >

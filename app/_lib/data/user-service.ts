@@ -39,10 +39,10 @@ export async function getUserDataById(id: string) {
       status: true,
       createdAt: true,
       modNote: true,
-      events: { select: { name: true, title: true } },
+      events: { select: { id: true, name: true, title: true } },
       editorOf: {
         where: { creatorId: { not: id } },
-        select: { name: true, title: true },
+        select: { id: true, name: true, title: true },
       },
       reports: {
         select: {

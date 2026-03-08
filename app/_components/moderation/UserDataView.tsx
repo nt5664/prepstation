@@ -37,10 +37,12 @@ export default async function UserDataView({
     role: Role;
     status: UserStatus;
     events: {
+      id: string;
       title: string;
       name: string;
     }[];
     editorOf: {
+      id: string;
       title: string;
       name: string;
     }[];
@@ -95,7 +97,8 @@ export default async function UserDataView({
               events.map((x) => (
                 <Link
                   key={x.name}
-                  href={`/mod/events/${x.name}`}
+                  href={`/mod/events/${x.id}`}
+                  target="_blank"
                   className="border-2 rounded-md text-center align-middle border-cyan-600 bg-gray-700"
                 >
                   {x.title}{" "}
@@ -116,7 +119,8 @@ export default async function UserDataView({
               editorOf.map((x) => (
                 <Link
                   key={x.name}
-                  href={`/mod/events/${x.name}`}
+                  href={`/mod/events/${x.id}`}
+                  target="_blank"
                   className="border-2 rounded-md text-center align-middle border-cyan-600 bg-gray-700"
                 >
                   {x.title}{" "}
