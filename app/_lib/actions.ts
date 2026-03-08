@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { refresh, revalidatePath } from "next/cache";
 import {
   eventFormSchema,
   EventFormSchema,
@@ -31,6 +31,7 @@ import {
 } from "@/app/_lib/data/schedule-service";
 import {
   getUsersByName,
+  setupPromoteUser,
   updateUserRole,
   updateUserStatus,
 } from "@/app/_lib/data/user-service";
@@ -79,14 +80,14 @@ export async function saveEvent(
         editors: editors.map((x) => x.id),
       });
 
-  revalidatePath("/user/events");
+  refresh();
   return savedName;
 }
 
 export async function deleteEvent(id: string) {
   const res = deleteEventDb(id);
 
-  revalidatePath("/user/events");
+  refresh();
   return res;
 }
 
@@ -121,8 +122,7 @@ export async function saveTable(
     ? await updateTable({ id, ...objCommon }, eventName)
     : await createTable(objCommon, eventName);
 
-  revalidatePath("/user/events");
-  revalidatePath(`/events`);
+  refresh();
   return savedStub;
 }
 
@@ -210,4 +210,11 @@ export async function suspendEvent(data: SuspendFormSchema, eventId: string) {
 
 export async function restoreEvent(eventId: string) {
   return await updateEventVisibility({ id: eventId, suspend: false });
+}
+
+export async function promoteSetup(token: string) {
+  const res = await setupPromoteUser(token);
+  if (res) refresh();
+
+  return res;
 }

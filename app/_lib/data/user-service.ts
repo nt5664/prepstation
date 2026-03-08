@@ -3,6 +3,7 @@ import { prisma } from "@/app/_lib/prisma";
 import { getServerSession } from "@/app/_lib/auth";
 import { isSuperuser } from "@/app/_utils/user";
 import { logUser } from "@/app/_lib/data/activity-service";
+import { safeEq } from "@/app/_utils/safety";
 
 export async function createUser(platformId: string, name: string) {
   return await prisma.user.create({
@@ -93,6 +94,10 @@ export async function getUsersBySearchString(search: string) {
   });
 }
 
+export async function doesAdminExist() {
+  return (await prisma.user.count({ where: { role: "ADMIN" } })) > 0;
+}
+
 export async function updateUserRole({
   id,
   promote,
@@ -105,6 +110,28 @@ export async function updateUserRole({
     data: { role: promote ? "MODERATOR" : "USER" },
     select: { role: true },
   });
+}
+
+export async function setupPromoteUser(token: string) {
+  const [session, hasAdmin] = await Promise.all([
+    getServerSession(),
+    doesAdminExist(),
+  ]);
+
+  if (
+    !session ||
+    hasAdmin ||
+    safeEq(token ?? null, process.env.SETUP_TOKEN ?? null)
+  )
+    throw new Error("Forbidden");
+
+  const { role: retVal } = await prisma.user.update({
+    where: { id: session!.user.id },
+    data: { role: "ADMIN" },
+    select: { role: true },
+  });
+
+  return retVal === "ADMIN";
 }
 
 export async function updateUserStatus({

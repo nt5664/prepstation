@@ -72,7 +72,7 @@ export default function RootLayout({
         <div className="flex h-dvh flex-col">
           <Header />
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="min-h-full flex flex-col">
+            <div className="grid grid-rows-[1fr_auto] min-h-full">
               <main>{children}</main>
               <Footer />
             </div>
