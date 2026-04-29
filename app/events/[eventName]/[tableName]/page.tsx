@@ -12,10 +12,8 @@ export async function generateMetadata({
   params,
 }: Readonly<{ params: Promise<{ eventName: string; tableName: string }> }>) {
   const { eventName, tableName } = await params;
-  const [table, event] = await Promise.all([
-    getTableSummary(tableName, eventName),
-    getEventWithTables(eventName),
-  ]);
+  const event = await getEventWithTables(eventName);
+  const table = await getTableSummary(tableName, event?.id ?? "");
 
   return {
     title: `${table?.title} [${event?.title}]`,
