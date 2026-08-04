@@ -4,7 +4,10 @@ import {
   getTableSummary,
 } from "@/app/_lib/data/table-service";
 import { getEndDate } from "@/app/_utils/time";
-import { getEventWithTables } from "@/app/_lib/data/event-service";
+import {
+  getEventIdByName,
+  getEventWithTables,
+} from "@/app/_lib/data/event-service";
 import TableTimes from "@/app/_components/TableTimes";
 import ScheduleList from "@/app/_components/ScheduleList";
 
@@ -12,8 +15,9 @@ export async function generateMetadata({
   params,
 }: Readonly<{ params: Promise<{ eventName: string; tableName: string }> }>) {
   const { eventName, tableName } = await params;
+  const { id: eventId } = (await getEventIdByName(eventName)) ?? { id: "NONE" };
   const [table, event] = await Promise.all([
-    getTableSummary(tableName, eventName),
+    getTableSummary(tableName, eventId),
     getEventWithTables(eventName),
   ]);
 

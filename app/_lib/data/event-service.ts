@@ -54,6 +54,13 @@ export async function createEvent({
   return createdEvent;
 }
 
+export async function getEventIdByName(name: string) {
+  return await prisma.event.findUnique({
+    where: { name },
+    select: { id: true },
+  });
+}
+
 export async function getEventHeader(name: string) {
   return await prisma.event.findUnique({
     where: { name },
